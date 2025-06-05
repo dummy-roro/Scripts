@@ -5,5 +5,5 @@ Steps to use the Scripts
 For Linux OS only
 1. Clone the repo by command, git clone https://github.com/dummy-roro/scripts.git
 2. cd scripts
-3. sudo chmod +x <Script_name> e.g,sudo chmod +x Installation.sh
-4. ./<Script_name> e.g ./Installation.sh
+3. sudo chmod +x <Script_name> e.g,sudo chmod +x installation.sh
+4. ./<Script_name> e.g ./installation.sh
