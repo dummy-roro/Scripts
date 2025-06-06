@@ -25,6 +25,7 @@ chmod +x setup.sh
 ### ☕ Java & Jenkins
 
 ```bash
+#Java installation
 sudo apt update -y
 sudo apt install openjdk-17-jre openjdk-17-jdk -y
 java --version
