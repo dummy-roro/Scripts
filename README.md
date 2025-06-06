@@ -121,8 +121,15 @@ or Port Forward
 ```bash
 kubectl port-forward svc/argocd-server -n argocd 9000:80 --address 0.0.0.0
 ```
+If image is from github hgcr repo u need to create secrect to prevent image pull error
+```bash
 
-
+kubectl create secret docker-registry github-container-registry \
+  --docker-server=ghcr.io \
+  --docker-username=YOUR_GITHUB_USERNAME \
+  --docker-password=YOUR_GITHUB_TOKEN \
+  --docker-email=YOUR_EMAIL
+```
 ### 🔑 Get Argo CD Initial Password
 
 ```bash
