@@ -143,7 +143,8 @@ kubectl create secret docker-registry github-container-registry \
   --docker-server=ghcr.io \
   --docker-username=YOUR_GITHUB_USERNAME \
   --docker-password=YOUR_GITHUB_TOKEN \
-  --docker-email=YOUR_EMAIL
+  --docker-email=YOUR_EMAIL \
+  -n your-namespace
 ```
 ### 🔑 Get Argo CD Initial Admin Password
 
