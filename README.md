@@ -34,12 +34,23 @@ echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins
 sudo apt-get update -y
 sudo apt-get install jenkins -y
 ```
+To Get Jenkins Admin Password
+
+```bash
+systemctl status jenkins
+```
 
 ### 🐳 Docker + Permissions
 
 ```bash
 sudo apt install docker.io -y
-sudo usermod -aG docker jenkins
+```
+Change Permissions to Jenkins
+```bash
+sudo usermod -aG docker jenkins # use when you integrate with jenkins
+```
+Change Permissions to Docker
+```bash
 sudo usermod -aG docker ubuntu
 sudo systemctl restart docker
 sudo chmod 777 /var/run/docker.sock
@@ -62,6 +73,10 @@ curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip
 sudo apt install unzip -y
 unzip awscliv2.zip
 sudo ./aws/install
+```
+Configure AWS
+```bash
+aws configure
 ```
 
 ---
@@ -117,20 +132,19 @@ Patch service to LoadBalancer
 ```bash
 kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
 ```
-or Port Forward
+Or Port Forward
 ```bash
 kubectl port-forward svc/argocd-server -n argocd 9000:80 --address 0.0.0.0
 ```
-If image is from github hgcr repo u need to create secrect to prevent image pull error
+If Image Is From Github GHCR Repo You Need To Create Secrect To Prevent Image Pull Error
 ```bash
-
 kubectl create secret docker-registry github-container-registry \
   --docker-server=ghcr.io \
   --docker-username=YOUR_GITHUB_USERNAME \
   --docker-password=YOUR_GITHUB_TOKEN \
   --docker-email=YOUR_EMAIL
 ```
-### 🔑 Get Argo CD Initial Password
+### 🔑 Get Argo CD Initial Admin Password
 
 ```bash
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d && echo
@@ -177,10 +191,14 @@ wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd6
 chmod +x minikube-linux-amd64
 sudo mv minikube-linux-amd64 /usr/local/bin/minikube
 ```
+To Start Minikube
+```bash
+minikube start
+```
 
 ---
 
-## 🧩 Kubernetes Cluster
+## 🧩 Kubernetes Cluster With Kubeadm
 
 ON-BOTH
 ------------------
