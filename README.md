@@ -112,8 +112,16 @@ sudo apt-mark hold kubelet kubeadm kubectl
 ```bash
 kubectl create namespace argocd
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+```
+Patch service to LoadBalancer
+```bash
 kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
 ```
+or Port Forward
+```bash
+kubectl port-forward svc/argocd-server -n argocd 9000:80 --address 0.0.0.0
+```
+
 
 ### 🔑 Get Argo CD Initial Password
 
