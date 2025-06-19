@@ -6,7 +6,7 @@ This script sets up a full DevOps environment with:
 - Kubernetes (kubeadm), ArgoCD
 - Security tools: Trivy
 - Optional: Minikube
-
+-Others
 ---
 
 ## 🛠️ Run This Script
@@ -20,7 +20,7 @@ chmod +x setup.sh
 
 ---
 
-## 📦 What Gets Installed
+## 📦 Installing Resources
 
 ### ☕ Java & Jenkins
 
@@ -35,13 +35,13 @@ echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins
 sudo apt-get update -y
 sudo apt-get install jenkins -y
 ```
-To Get Jenkins Admin Password
+You can use below command to get Jenkins Admin Password
 
 ```bash
 systemctl status jenkins
 ```
 
-### 🐳 Docker + Permissions
+### 🐳 Installing Docker + Permissions
 
 ```bash
 sudo apt install docker.io -y
@@ -54,7 +54,7 @@ Change Permissions to Docker
 ```bash
 sudo usermod -aG docker ubuntu
 sudo systemctl restart docker
-sudo chmod 777 /var/run/docker.sock
+sudo chmod 777 /var/run/docker.sock #optional
 ```
 
 ---
@@ -70,19 +70,20 @@ docker run -d --name sonar -p 9000:9000 sonarqube:lts-community
 ## ☁️ AWS CLI
 
 ```bash
+#install aws cli
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 sudo apt install unzip -y
 unzip awscliv2.zip
 sudo ./aws/install
 ```
-Configure AWS
+To Configure AWS ( You might need aws user creds with necessary permissions)
 ```bash
 aws configure
 ```
 
 ---
 
-## ☸️ Kubernetes Stack
+## ☸️ Installing Kubernetes Stack
 
 ### Install `kubectl`, `eksctl`, `containerd`, and dependencies
 
@@ -123,7 +124,7 @@ sudo apt-mark hold kubelet kubeadm kubectl
 
 ---
 
-## 🧭 Argo CD
+## 🧭 Installing Argo CD On K8s
 
 ```bash
 kubectl create namespace argocd
@@ -137,7 +138,12 @@ Or Port Forward
 ```bash
 kubectl port-forward svc/argocd-server -n argocd 9000:80 --address 0.0.0.0 > /dev/null & 
 ```
-If Image Is From Github GHCR Repo You Need To Create Secrect To Prevent Image Pull Error
+### 🔑 Get Argo CD Initial Admin Password
+
+```bash
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d && echo
+```
+(Optional) If Image Is From Github GHCR Repo You Need To Create Secrect To Prevent Image Pull Error
 ```bash
 kubectl create secret docker-registry github-container-registry \
   --docker-server=ghcr.io \
@@ -146,19 +152,14 @@ kubectl create secret docker-registry github-container-registry \
   --docker-email=YOUR_EMAIL \
   -n your-namespace
 ```
-### 🔑 Get Argo CD Initial Admin Password
-
-```bash
-kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d && echo
-```
-
 ---
 
-## 🔐 Security Tools
+## 🔐 Installing Security Tools
 
 ### Install Trivy
 
 ```bash
+#install trivy
 sudo apt-get install -y wget gnupg lsb-release
 wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
 echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/trivy.list
@@ -168,15 +169,18 @@ sudo apt install trivy -y
 
 ---
 
-## 🔧 Other Tools
+## 🔧 IAC Tools
 
 ### Terraform
 
 ```bash
+#install terraform
 wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
 echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
 sudo apt update && sudo apt install terraform -y
 ```
+### Or you can use OpenTofu 
+cmd will add...
 
 ### Helm
 
@@ -186,7 +190,7 @@ sudo snap install helm --classic
 
 ---
 
-## 🧪 Optional: Minikube
+## 🧪 Optional: Minikube Set Up
 
 ```bash
 wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
@@ -195,7 +199,8 @@ sudo mv minikube-linux-amd64 /usr/local/bin/minikube
 ```
 To Start Minikube
 ```bash
-minikube start
+#minikube start --driver=<driver> --cpus=<number> --memory=<amount>
+minikube start --driver=docker --cpus=2 --memory=4096
 ```
 
 ---
