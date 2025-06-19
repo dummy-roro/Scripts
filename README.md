@@ -135,7 +135,7 @@ kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}
 ```
 Or Port Forward
 ```bash
-kubectl port-forward svc/argocd-server -n argocd 9000:80 --address 0.0.0.0
+kubectl port-forward svc/argocd-server -n argocd 9000:80 --address 0.0.0.0 > /dev/null & 
 ```
 If Image Is From Github GHCR Repo You Need To Create Secrect To Prevent Image Pull Error
 ```bash
