@@ -254,12 +254,10 @@ kubeseal --format=yaml < mysecret.yaml > sealedsecret.yaml
 ```
 You can now store sealedsecret.yaml in Git safely.
 
-✅ Step 5: Apply the Sealed Secret to the Cluster
-bash
-Copy
-Edit
+Apply the Sealed Secret to the Cluster
+```bash
 kubectl apply -f sealedsecret.yaml
-
+```
 ---
 
 ## 🧪 Optional: Minikube Set Up
