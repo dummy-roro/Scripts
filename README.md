@@ -225,7 +225,7 @@ chmod +x kubeseal
 sudo mv kubeseal /usr/local/bin/
 ```
 Install Sealed Secrets Controller using Helm
-```basht
+```bash
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 helm install sealed-secrets bitnami/sealed-secrets
@@ -241,19 +241,17 @@ kubeseal --fetch-cert \
   --controller-name=sealed-secrets-controller \
   --controller-namespace=kube-system > pub-cert.pem
 ```
-✅ Step 4: Create and Seal a Secret
+Create and Seal a Secret
 🔧 Create a Kubernetes secret (local file):
-bash
-Copy
-Edit
+```bash
 kubectl create secret generic mysecret \
   --from-literal=password=mypassword \
   --dry-run=client -o yaml > mysecret.yaml
+```
 🔐 Seal it:
-bash
-Copy
-Edit
+```bash
 kubeseal --format=yaml < mysecret.yaml > sealedsecret.yaml
+```
 You can now store sealedsecret.yaml in Git safely.
 
 ✅ Step 5: Apply the Sealed Secret to the Cluster
