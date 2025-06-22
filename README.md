@@ -216,11 +216,51 @@ cmd will add...
 ```bash
 sudo snap install helm --classic
 ```
-### Binami Sealed Secrect
-Install using helm
+### Sealed Secrect
+Install kubeseal CLI (Local Machine or on Bastion Host)
+🔽 Linux:
 ```bash
-helm repo add sealed-secrets https://bitnami-labs.github.io/sealed-secrets
+wget https://github.com/bitnami-labs/sealed-secrets/releases/latest/download/kubeseal-linux-amd64 -O kubeseal
+chmod +x kubeseal
+sudo mv kubeseal /usr/local/bin/
 ```
+Install Sealed Secrets Controller using Helm
+```basht
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+helm install sealed-secrets bitnami/sealed-secrets
+```
+Optional: Set the namespace
+```bash
+helm install sealed-secrets bitnami/sealed-secrets --namespace kube-system
+```
+Fetch the Public Certificate
+This is required to encrypt secrets offline with kubeseal.
+```bash
+kubeseal --fetch-cert \
+  --controller-name=sealed-secrets-controller \
+  --controller-namespace=kube-system > pub-cert.pem
+```
+✅ Step 4: Create and Seal a Secret
+🔧 Create a Kubernetes secret (local file):
+bash
+Copy
+Edit
+kubectl create secret generic mysecret \
+  --from-literal=password=mypassword \
+  --dry-run=client -o yaml > mysecret.yaml
+🔐 Seal it:
+bash
+Copy
+Edit
+kubeseal --format=yaml < mysecret.yaml > sealedsecret.yaml
+You can now store sealedsecret.yaml in Git safely.
+
+✅ Step 5: Apply the Sealed Secret to the Cluster
+bash
+Copy
+Edit
+kubectl apply -f sealedsecret.yaml
 
 ---
 
