@@ -216,6 +216,11 @@ cmd will add...
 ```bash
 sudo snap install helm --classic
 ```
+### Binami Sealed Secrect
+Install using helm
+```bash
+helm repo add sealed-secrets https://bitnami-labs.github.io/sealed-secrets
+```
 
 ---
 
