@@ -141,7 +141,36 @@ kubectl port-forward svc/argocd-server -n argocd 9000:80 --address 0.0.0.0 > /de
 ### 🔑 Get Argo CD Initial Admin Password
 
 ```bash
+argocd admin initial-password -n argocd
+```
+OR
+```bash
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d && echo
+```
+To log in argocd server from terminal
+```bash
+argocd login <ARGOCD_SERVER>
+```
+Change the password using the command
+```bash
+argocd account update-password
+```
+Example app yaml
+```bash
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: guestbook
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/argoproj/argocd-example-apps.git
+    targetRevision: HEAD
+    path: guestbook
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: guestbook
 ```
 (Optional) If Image Is From Github GHCR Repo You Need To Create Secrect To Prevent Image Pull Error
 ```bash
