@@ -218,6 +218,7 @@ sudo snap install helm --classic
 ```
 ### Sealed Secrect
 Install kubeseal CLI (Local Machine or on Bastion Host)
+
 🔽 Linux:
 ```bash
 wget https://github.com/bitnami-labs/sealed-secrets/releases/latest/download/kubeseal-linux-amd64 -O kubeseal
@@ -235,6 +236,7 @@ Optional: Set the namespace
 helm install sealed-secrets bitnami/sealed-secrets --namespace kube-system
 ```
 Fetch the Public Certificate
+
 This is required to encrypt secrets offline with kubeseal.
 ```bash
 kubeseal --fetch-cert \
@@ -242,13 +244,16 @@ kubeseal --fetch-cert \
   --controller-namespace=kube-system > pub-cert.pem
 ```
 Create and Seal a Secret
+
 🔧 Create a Kubernetes secret (local file):
+
 ```bash
 kubectl create secret generic mysecret \
   --from-literal=password=mypassword \
   --dry-run=client -o yaml > mysecret.yaml
 ```
 🔐 Seal it:
+
 ```bash
 kubeseal --format=yaml < mysecret.yaml > sealedsecret.yaml
 ```
