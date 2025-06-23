@@ -32,7 +32,7 @@ Walk through of the process of setting up a robust infrastructure on AWS using E
 ---
 
 ## 🛠️ Tools Installation
-# Iac Tools
+## Iac Tools
 Terraform 
 ```bash
 #install terraform
