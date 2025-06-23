@@ -1,4 +1,4 @@
-# 🚀 DevOps Environment Setup
+# 🚀 DevOps Environment Setup 
 
 This script sets up a full DevOps environment with:
 - Java, Jenkins, Docker, SonarQube
