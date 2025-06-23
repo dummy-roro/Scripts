@@ -10,9 +10,10 @@ Walk through of the process of setting up a robust infrastructure on AWS using E
     - OpenTofu
     - Ansible
   - AWS CLI
+  - Kubernetes Stack
   - Helm
 - Setting Up Infrastructure
-  - EKSCluster
+  - EKS Cluster
   - Kubeadm Cluster
   - Minikube Cluster
 - CI
@@ -30,7 +31,6 @@ Walk through of the process of setting up a robust infrastructure on AWS using E
 - Service Mesh
   - Istio
 ---
-
 ## 🛠️ Tools Installation
 ### Iac Tools
 Terraform 
@@ -39,24 +39,82 @@ Terraform
 wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
 echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
 sudo apt update && sudo apt install terraform -y
+terraform -version
 ```
+---
 ### Or you can use OpenTofu 
-cmd will add...
+```bash
+#install opentofu
+TOFU_VERSION="1.7.0" # Replace version as needed
+wget https://github.com/opentofu/opentofu/releases/download/v${TOFU_VERSION}/tofu_${TOFU_VERSION}_linux_amd64.zip
+sudo apt install unzip -y
+unzip tofu_${TOFU_VERSION}_linux_amd64.zip
+sudo mv tofu /usr/local/bin/
+tofu version
+```
+---
+### ☁️ AWS CLI
 
+```bash
+#install aws cli
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+sudo apt install unzip -y
+unzip awscliv2.zip
+sudo ./aws/install
+```
+To Configure AWS ( You might need aws user creditials with necessary permissions)
+```bash
+aws configure
+```
+---
+## ☸️ Installing Kubernetes Stack
+### Install `kubectl`, `eksctl`, `containerd`, and dependencies
+```bash
+# Kernel modules and sysctl
+cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
+overlay
+br_netfilter
+EOF
+
+sudo modprobe overlay
+sudo modprobe br_netfilter
+
+cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-iptables  = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+net.ipv4.ip_forward                 = 1
+EOF
+
+sudo sysctl --system
+```
+---
+### Install Kubernetes tools
+```bash
+sudo apt-get install -y containerd curl apt-transport-https ca-certificates
+containerd config default | sudo tee /etc/containerd/config.toml
+sudo systemctl restart containerd
+
+# Install kubeadm, kubelet, kubectl
+KUBE_LATEST=$(curl -sL https://dl.k8s.io/release/stable.txt | awk 'BEGIN{FS="."}{printf "%s.%s", $1, $2}')
+curl -fsSL https://pkgs.k8s.io/core:/stable:/${KUBE_LATEST}/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/${KUBE_LATEST}/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo apt-get update
+sudo apt-get install -y kubelet kubeadm kubectl
+sudo apt-mark hold kubelet kubeadm kubectl
+```
+---
 ### Helm
 
 ```bash
 sudo snap install helm --classic
 ```
-
-
-```bash
-chmod +x setup.sh
-./setup.sh
-```
-
-> 📁 Make sure you're running as a user with `sudo` privileges.
-
+---
+## Setting Up Infrastructure
+### EKS Cluster
+---
+### Kubeadm Cluster
+---
+### Minikube Cluster
 ---
 
 ## 📦 Installing Resources
@@ -145,60 +203,8 @@ docker-compose up -d
 ```
 ---
 
-## ☁️ AWS CLI
 
-```bash
-#install aws cli
-curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-sudo apt install unzip -y
-unzip awscliv2.zip
-sudo ./aws/install
-```
-To Configure AWS ( You might need aws user creds with necessary permissions)
-```bash
-aws configure
-```
 
----
-
-## ☸️ Installing Kubernetes Stack
-
-### Install `kubectl`, `eksctl`, `containerd`, and dependencies
-
-```bash
-# Kernel modules and sysctl
-cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
-overlay
-br_netfilter
-EOF
-
-sudo modprobe overlay
-sudo modprobe br_netfilter
-
-cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
-net.bridge.bridge-nf-call-iptables  = 1
-net.bridge.bridge-nf-call-ip6tables = 1
-net.ipv4.ip_forward                 = 1
-EOF
-
-sudo sysctl --system
-```
-
-### Install Kubernetes tools
-
-```bash
-sudo apt-get install -y containerd curl apt-transport-https ca-certificates
-containerd config default | sudo tee /etc/containerd/config.toml
-sudo systemctl restart containerd
-
-# Install kubeadm, kubelet, kubectl
-KUBE_LATEST=$(curl -sL https://dl.k8s.io/release/stable.txt | awk 'BEGIN{FS="."}{printf "%s.%s", $1, $2}')
-curl -fsSL https://pkgs.k8s.io/core:/stable:/${KUBE_LATEST}/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/${KUBE_LATEST}/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
-sudo apt-get update
-sudo apt-get install -y kubelet kubeadm kubectl
-sudo apt-mark hold kubelet kubeadm kubectl
-```
 
 ---
 
@@ -446,6 +452,13 @@ To Start Minikube
 #minikube start --driver=<driver> --cpus=<number> --memory=<amount>
 minikube start --driver=docker --cpus=2 --memory=4096
 ```
+---
+### To Run Bash Scripts
+```bash
+chmod +x setup.sh
+./setup.sh
+```
+> 📁 Make sure you're running as a user with `sudo` privileges.
 
 ---
 
