@@ -1,8 +1,8 @@
 # 🚀 DevOps Environment Setup
 
 walk through of the process of setting up a robust infrastructure on AWS using EKS, DevOps best practices, and security measures. This project aims to provide necessary commands and resources to get hands-on experience in deploying, securing, and monitoring a scalable application environment and infra.
-
-### Article
+---
+## Article
 
 - Iac Tools
   - 
