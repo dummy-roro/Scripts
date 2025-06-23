@@ -265,22 +265,9 @@ kubectl apply -f sealedsecret.yaml
 ```
 ---
 
-## 🧪 Optional: Minikube Set Up
+## 🧩 Kubernetes Cluster Set Up
 
-```bash
-wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-chmod +x minikube-linux-amd64
-sudo mv minikube-linux-amd64 /usr/local/bin/minikube
-```
-To Start Minikube
-```bash
-#minikube start --driver=<driver> --cpus=<number> --memory=<amount>
-minikube start --driver=docker --cpus=2 --memory=4096
-```
-
----
-
-## 🧩 Kubernetes Cluster With Kubeadm
+With Kubeadm
 
 ON-BOTH
 ------------------
@@ -368,6 +355,21 @@ paste join cmd
 - Replace `<your-primary-ip>` with the result of: `ip route | grep default | awk '{ print $9 }'`
 
 ---
+## Minikube Set Up
+
+```bash
+wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+chmod +x minikube-linux-amd64
+sudo mv minikube-linux-amd64 /usr/local/bin/minikube
+```
+To Start Minikube
+```bash
+#minikube start --driver=<driver> --cpus=<number> --memory=<amount>
+minikube start --driver=docker --cpus=2 --memory=4096
+```
+
+---
+
 
 ## 📎 License
 
