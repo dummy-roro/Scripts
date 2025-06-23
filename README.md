@@ -31,7 +31,24 @@ Walk through of the process of setting up a robust infrastructure on AWS using E
   - Istio
 ---
 
-## 🛠️ Run the Script
+## 🛠️ Tools Installation
+# Iac Tools
+Terraform 
+```bash
+#install terraform
+wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+sudo apt update && sudo apt install terraform -y
+```
+### Or you can use OpenTofu 
+cmd will add...
+
+### Helm
+
+```bash
+sudo snap install helm --classic
+```
+
 
 ```bash
 chmod +x setup.sh
