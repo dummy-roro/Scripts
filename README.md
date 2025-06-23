@@ -1,7 +1,18 @@
 # 🚀 DevOps Environment Setup
 
-This script sets up a full DevOps environment with:
-- Java, Jenkins, Docker, SonarQube
+walk through of the process of setting up a robust infrastructure on AWS using EKS, DevOps best practices, and security measures. This project aims to provide necessary commands and resources to get hands-on experience in deploying, securing, and monitoring a scalable application environment and infra.
+
+### Article
+
+- Iac Tools
+  - 
+- Setting Up Infrastructure
+  - EKSCluster
+  - Kubeadm Cluster
+  - Minikube Cluster
+- CI
+  - Java, Jenkins,
+  -  Docker, SonarQube, Nexus
 - AWS CLI, Terraform, Helm
 - Kubernetes (kubeadm), ArgoCD
 - Security tools: Trivy
