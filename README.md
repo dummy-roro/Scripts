@@ -41,7 +41,7 @@ You can use below command to get Jenkins Admin Password
 systemctl status jenkins
 ```
 
-### 🐳 Installing Docker + Permissions
+### 🐳 Installing Docker & Permissions
 
 ```bash
 sudo apt install docker.io -y
@@ -64,7 +64,46 @@ sudo chmod 777 /var/run/docker.sock #optional
 ```bash
 docker run -d --name sonar -p 9000:9000 sonarqube:lts-community
 ```
+## Nexus (Docker)
 
+```bash
+docker run -d \
+  --name nexus \
+  -p 8081:8081 \
+  -v nexus-data:/nexus-data \
+  sonatype/nexus3
+```
+Default admin login:
+
+Username: admin
+
+Password: (found in /nexus-data/admin.password inside the container)
+```bash
+docker exec -it nexus cat /nexus-data/admin.password
+```
+Or Use Docker Compose (Recommended)
+
+Create a file named docker-compose.yml:
+
+```bash
+version: '3'
+services:
+  nexus:
+    image: sonatype/nexus3
+    container_name: nexus
+    ports:
+      - "8081:8081"
+    volumes:
+      - nexus-data:/nexus-data
+    restart: unless-stopped
+
+volumes:
+  nexus-data:
+```
+Then start it with:
+```bash
+docker-compose up -d
+```
 ---
 
 ## ☁️ AWS CLI
@@ -245,7 +284,7 @@ kubeseal --fetch-cert \
 ```
 Create and Seal a Secret
 
-🔧 Create a Kubernetes secret (local file):
+🔧 Create a Kubernetes secret (On your local machine):
 
 ```bash
 kubectl create secret generic mysecret \
@@ -263,6 +302,7 @@ Apply the Sealed Secret to the Cluster
 ```bash
 kubectl apply -f sealedsecret.yaml
 ```
+Integration with Vault will add soon
 ---
 
 ## 🧩 Kubernetes Cluster Set Up
