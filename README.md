@@ -1,26 +1,37 @@
 # 🚀 DevOps Environment Setup
 
-walk through of the process of setting up a robust infrastructure on AWS using EKS, DevOps best practices, and security measures. This project aims to provide necessary commands and resources to get hands-on experience in deploying, securing, and monitoring a scalable application environment and infra.
----
+Walk through of the process of setting up a robust infrastructure on AWS using EKS, DevOps best practices, and security measures. This project aims to provide necessary commands and resources to get hands-on experience in deploying, securing, and monitoring a scalable application environment and infra. (Note: All commands are for Linux:Ubuntu)
+
 ## Article
 
-- Iac Tools
-  - 
+- Tools Installation
+  - Iac
+    - Terraform
+    - OpenTofu
+    - Ansible
+  - AWS CLI
+  - Helm
 - Setting Up Infrastructure
   - EKSCluster
   - Kubeadm Cluster
   - Minikube Cluster
 - CI
   - Java, Jenkins,
-  -  Docker, SonarQube, Nexus
-- AWS CLI, Terraform, Helm
-- Kubernetes (kubeadm), ArgoCD
-- Security tools: Trivy
-- Optional: Minikube
--Others
+  - Docker
+- CD
+  - ArgoCD
+- Security Tools
+  - SonarQube
+  - Nexus
+  - Trivy
+- Monitoring & Logging
+  - Prometheus & Grafana
+  - ELK/EFK
+- Service Mesh
+  - Istio
 ---
 
-## 🛠️ Run This Script
+## 🛠️ Run the Script
 
 ```bash
 chmod +x setup.sh
