@@ -113,7 +113,6 @@ sudo apt-mark hold kubelet kubeadm kubectl
 ```
 ---
 ### Helm
-
 ```bash
 sudo snap install helm --classic
 ```
