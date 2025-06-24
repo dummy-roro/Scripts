@@ -119,7 +119,8 @@ sudo snap install helm --classic
 ---
 # Setting Up Infrastructure
 ## EKS Cluster
-cmd will add...
+Prerequisite - Terraform or OpenTofu must installed
+Clone this repo in your local machine or vm 
 ---
 ## 🧩 Kubernetes Cluster Set Up With Kubeadm
 ON-BOTH
