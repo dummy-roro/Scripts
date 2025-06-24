@@ -119,8 +119,24 @@ sudo snap install helm --classic
 ---
 # Setting Up Infrastructure
 ## EKS Cluster
-Prerequisite - Terraform or OpenTofu must installed
-Clone this repo in your local machine or vm 
+Prerequisite - We need to create an IAM user and generate the AWS Access key and Awscli, Terraform or OpenTofu must installed
+```bash
+aws configure #add cred copied from IAM user
+```
+Clone this repo in your local machine or vm
+```bash
+git clone https://github.com/dummy-roro/EKS-Terraform-GitHub-Actions.git 
+```
+Then navigate to eks folder and 
+```bash
+terraform init
+```
+```bash
+terraform plan
+```
+```bash
+terraform apply --auto-approve
+```
 ---
 ## 🧩 Kubernetes Cluster Set Up With Kubeadm
 ON-BOTH
