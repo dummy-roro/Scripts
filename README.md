@@ -122,7 +122,6 @@ sudo snap install helm --classic
 cmd will add...
 ---
 ## 🧩 Kubernetes Cluster Set Up With Kubeadm
-
 ON-BOTH
 ------------------
 ```bash
