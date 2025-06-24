@@ -149,7 +149,7 @@ net.ipv4.ip_forward                 = 1
 EOF
 
 sudo sysctl --system
-
+#installing containerd
 sudo apt-get install -y containerd
 sudo mkdir -p /etc/containerd
 containerd config default | sed 's/SystemdCgroup = false/SystemdCgroup = true/' | sudo tee /etc/containerd/config.toml
