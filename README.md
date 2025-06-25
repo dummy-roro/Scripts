@@ -30,6 +30,10 @@ Walk through of the process of setting up a robust infrastructure on AWS using E
   - ELK/EFK
 - Service Mesh
   - Istio
+-Deployment Strategries
+  - Rolling Update
+  - Blue Green
+  - Canary
 ---
 # 🛠️ Tools Installation
 ### Iac Tools
@@ -443,7 +447,203 @@ kubectl apply -f sealedsecret.yaml
 Integration with Vault will add soon
 ---
 
+1. Rolling Update (Default in Kubernetes)
+📌 Step-by-step:
+Define a Deployment with the new version.
 
+Kubernetes gradually replaces old Pods with new ones.
+
+🧾 YAML:
+yaml
+Copy
+Edit
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+        - name: myapp
+          image: myapp:v2  # change image tag to update
+🔵 2. Blue-Green Deployment
+📌 Step-by-step:
+Deploy two versions (e.g., v1 and v2) with different labels.
+
+Point the Service to either version by changing the selector.
+
+🧾 YAML:
+Deployments:
+
+yaml
+Copy
+Edit
+# v1
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-v1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: myapp
+        version: v1
+    spec:
+      containers:
+        - name: myapp
+          image: myapp:v1
+
+# v2
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-v2
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: myapp
+        version: v2
+    spec:
+      containers:
+        - name: myapp
+          image: myapp:v2
+Service:
+
+yaml
+Copy
+Edit
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-service
+spec:
+  selector:
+    app: myapp
+    version: v1  # 🔄 change to v2 to switch traffic
+  ports:
+    - port: 80
+      targetPort: 80
+🟡 3. Canary Deployment (with Argo Rollouts)
+Requires Argo Rollouts installed in your cluster.
+
+📌 Step-by-step:
+Replace Deployment with Rollout object.
+
+Use steps to incrementally shift traffic.
+
+🧾 YAML:
+yaml
+Copy
+Edit
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: myapp
+spec:
+  replicas: 3
+  strategy:
+    canary:
+      steps:
+        - setWeight: 20
+        - pause: {duration: 30s}
+        - setWeight: 50
+        - pause: {duration: 60s}
+        - setWeight: 100
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+        - name: myapp
+          image: myapp:v2
+Service & Analysis can be added for more advanced rollouts.
+
+🧪 4. A/B Testing (using Istio or Ingress)
+Requires Istio or [NGINX Ingress Controller].
+
+📌 Step-by-step:
+Create two Deployments (v1 & v2).
+
+Route traffic by user headers or percentage.
+
+🧾 YAML (Istio VirtualService):
+yaml
+Copy
+Edit
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: myapp
+spec:
+  hosts:
+    - myapp.example.com
+  http:
+    - match:
+        - headers:
+            user-type:
+              exact: beta
+      route:
+        - destination:
+            host: myapp
+            subset: v2
+    - route:
+        - destination:
+            host: myapp
+            subset: v1
+👻 5. Shadow Deployment
+Also done using Istio or custom proxy.
+
+📌 Step-by-step:
+Send a copy of traffic to a “shadow” app.
+
+Do not return the response from shadow.
+
+🧾 YAML (Istio):
+yaml
+Copy
+Edit
+http:
+  - route:
+      - destination:
+          host: myapp-v1
+    mirror:
+      host: myapp-v2
+    mirrorPercentage:
+      value: 100.0
+📌 Summary Table
+Strategy	Requires Extra Tool?	Supports Zero Downtime	Risk Level	Rollback
+Rolling	❌ No	✅ Yes	Medium	✅ Yes
+Blue-Green	❌ No	✅ Yes (via Service)	Low	✅ Easy
+Canary	✅ Argo Rollouts/Istio	✅ Yes	Very Low	✅ Safe
+A/B Testing	✅ Istio	✅ Yes	Very Low	✅ Safe
+Shadow	✅ Istio	✅ Yes	None	N/A
 ### To Run Bash Scripts
 ```bash
 chmod +x setup.sh
