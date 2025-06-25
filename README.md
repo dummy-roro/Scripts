@@ -449,6 +449,7 @@ Integration with Vault will add soon
 ## Deployment Strategries
 ### 1. Rolling Update (Default in Kubernetes)
 📌 Step-by-step:
+
 Define a Deployment with the new version.
 
 Kubernetes gradually replaces old Pods with new ones.
@@ -481,9 +482,13 @@ spec:
 ---
 ### 2. Blue-Green Deployment
 📌 Step-by-step:
+
 Deploy two versions (e.g., v1 and v2) with different labels.
+
 Point the Service to either version by changing the selector.
+
 🧾 YAML:
+
 Deployments:
 ```bash
 # v1
@@ -542,12 +547,16 @@ spec:
 ```
 ---
 ### 3. Canary Deployment (with Argo Rollouts)
+
 Requires Argo Rollouts installed in your cluster.
+
 📌 Step-by-step:
+
 Replace Deployment with Rollout object.
+
 Use steps to incrementally shift traffic.
+
 🧾 YAML:
-yaml
 ```bash
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
@@ -578,10 +587,15 @@ spec:
 Service & Analysis can be added for more advanced rollouts.
 ---
 ### 4. A/B Testing (using Istio or Ingress)
+
 Requires Istio or [NGINX Ingress Controller].
+
 📌 Step-by-step:
+
 Create two Deployments (v1 & v2).
+
 Route traffic by user headers or percentage.
+
 🧾 YAML (Istio VirtualService):
 ```bash
 apiVersion: networking.istio.io/v1beta1
@@ -607,10 +621,15 @@ spec:
 ```
 ---
 ### 5. Shadow Deployment
+
 Also done using Istio or custom proxy.
+
 📌 Step-by-step:
+
 Send a copy of traffic to a “shadow” app.
+
 Do not return the response from shadow.
+
 🧾 YAML (Istio):
 ```bash
 http:
@@ -623,13 +642,6 @@ http:
       value: 100.0
 ```
 ---
-📌 Summary Table
-Strategy	Requires Extra Tool?	Supports Zero Downtime	Risk Level	Rollback
-Rolling	❌ No	✅ Yes	Medium	✅ Yes
-Blue-Green	❌ No	✅ Yes (via Service)	Low	✅ Easy
-Canary	✅ Argo Rollouts/Istio	✅ Yes	Very Low	✅ Safe
-A/B Testing	✅ Istio	✅ Yes	Very Low	✅ Safe
-Shadow	✅ Istio	✅ Yes	None	N/A
 ### To Run Bash Scripts
 ```bash
 chmod +x setup.sh
