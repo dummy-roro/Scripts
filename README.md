@@ -397,7 +397,7 @@ sudo apt install trivy -y
 ---
 
 
-### Sealed Secrect
+## Sealed Secrect
 Install kubeseal CLI (Local Machine or on Bastion Host)
 
 🔽 Linux:
@@ -446,8 +446,8 @@ kubectl apply -f sealedsecret.yaml
 ```
 Integration with Vault will add soon
 ---
-## Deployment Strategries
-### 1. Rolling Update (Default in Kubernetes)
+# Deployment Strategries
+## 1. Rolling Update (Default in Kubernetes)
 📌 Step-by-step:
 
 Define a Deployment with the new version.
@@ -480,7 +480,7 @@ spec:
           image: myapp:v2  # change image tag to update
 ```
 ---
-### 2. Blue-Green Deployment
+## 2. Blue-Green Deployment
 📌 Step-by-step:
 
 Deploy two versions (e.g., v1 and v2) with different labels.
@@ -546,7 +546,7 @@ spec:
       targetPort: 80
 ```
 ---
-### 3. Canary Deployment (with Argo Rollouts)
+## 3. Canary Deployment (with Argo Rollouts)
 
 Requires Argo Rollouts installed in your cluster.
 
@@ -586,7 +586,7 @@ spec:
 ```
 Service & Analysis can be added for more advanced rollouts.
 ---
-### 4. A/B Testing (using Istio or Ingress)
+## 4. A/B Testing (using Istio or Ingress)
 
 Requires Istio or [NGINX Ingress Controller].
 
@@ -620,7 +620,7 @@ spec:
             subset: v1
 ```
 ---
-### 5. Shadow Deployment
+## 5. Shadow Deployment
 
 Also done using Istio or custom proxy.
 
