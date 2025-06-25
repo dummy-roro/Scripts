@@ -585,7 +585,6 @@ spec:
           image: myapp:v2
 ```
 Service & Analysis can be added for more advanced rollouts.
----
 ## 4. A/B Testing (using Istio or Ingress)
 
 Requires Istio or [NGINX Ingress Controller].
