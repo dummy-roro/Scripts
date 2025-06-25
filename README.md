@@ -450,7 +450,9 @@ Integration with Vault will add soon
 ### 1. Rolling Update (Default in Kubernetes)
 📌 Step-by-step:
 Define a Deployment with the new version.
+
 Kubernetes gradually replaces old Pods with new ones.
+
 🧾 YAML:
 ```bash
 apiVersion: apps/v1
