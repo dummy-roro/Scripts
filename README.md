@@ -654,13 +654,16 @@ Add the litmus helm repository
 ```bash
 helm repo add litmuschaos https://litmuschaos.github.io/litmus-helm/
 helm repo list
-Step-2: Create the namespace on which you want to install Litmus ChaosCenter
-The ChaosCenter can be placed in any namespace, but for this scenario we are choose litmus as the namespace.
-kubectl create ns litmus
-Step-3: Install Litmus ChaosCenter
-helm install chaos litmuschaos/litmus --namespace=litmus --set portal.frontend.service.type=NodePort
-Note: If your Kubernetes cluster isn't local, you may want not to expose
 ```
+Create the namespace
+```bash
+kubectl create ns litmus
+```
+Install Litmus ChaosCenter
+```bash
+helm install chaos litmuschaos/litmus --namespace=litmus --set portal.frontend.service.type=NodePort
+```
+---
 ### To Run Bash Scripts
 ```bash
 chmod +x setup.sh
