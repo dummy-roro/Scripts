@@ -30,10 +30,13 @@ Walk through of the process of setting up a robust infrastructure on AWS using E
   - ELK/EFK
 - Service Mesh
   - Istio
--Deployment Strategries
+- Deployment Strategries
+  - Recreate
   - Rolling Update
   - Blue Green
   - Canary
+- Chaos Engineering
+  - Litmus
 ---
 # 🛠️ Tools Installation
 ### Iac Tools
@@ -641,6 +644,23 @@ http:
       value: 100.0
 ```
 ---
+# Chaos Engineering
+## Litmus
+Install Litmus ChaosCenter on kubernetes Cluster
+
+Using Helm
+
+Add the litmus helm repository
+```bash
+helm repo add litmuschaos https://litmuschaos.github.io/litmus-helm/
+helm repo list
+Step-2: Create the namespace on which you want to install Litmus ChaosCenter
+The ChaosCenter can be placed in any namespace, but for this scenario we are choose litmus as the namespace.
+kubectl create ns litmus
+Step-3: Install Litmus ChaosCenter
+helm install chaos litmuschaos/litmus --namespace=litmus --set portal.frontend.service.type=NodePort
+Note: If your Kubernetes cluster isn't local, you may want not to expose
+```
 ### To Run Bash Scripts
 ```bash
 chmod +x setup.sh
