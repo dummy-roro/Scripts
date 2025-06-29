@@ -254,7 +254,66 @@ You can use below command to get Jenkins Admin Password
 ```bash
 systemctl status jenkins
 ```
+Sample Jenkinsfile using shared library
+```bash
+@Library('jenkins-shared-library') _
 
+pipeline {
+    agent any
+
+    tools {
+        nodejs 'nodejs23'
+    }
+
+    environment {
+        SCANNER_HOME = tool 'sonar-scanner'
+    }
+
+    stages {
+        stage('Git Checkout') {
+            steps {
+                checkoutRepo('https://github.com/jaiswaladi246/3-Tier-DevSecOps-Mega-Project.git', 'dev')
+            }
+        }
+
+        stage('Frontend Compilation') {
+            steps {
+                frontendCompile('client')
+            }
+        }
+
+        stage('Backend Compilation') {
+            steps {
+                backendCompile('api')
+            }
+        }
+
+        stage('GitLeaks Scan') {
+            steps {
+                gitleaksScan(['client', 'api'])
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                sonarAnalysis('NodeJS-Project', 'NodeJS-Project')
+            }
+        }
+
+        stage('Quality Gate Check') {
+            steps {
+                qualityGateCheck('sonar-token')
+            }
+        }
+
+        stage('Trivy FS Scan') {
+            steps {
+                trivyScan('.', 'fs-report.html')
+            }
+        }
+    }
+}
+```
 ### 🐳 Installing Docker & Permissions
 
 ```bash
