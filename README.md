@@ -286,7 +286,7 @@ pipeline {
 
         stage('Git Checkout') {
             steps {
-                checkoutRepo('https://github.com/jaiswaladi246/3-Tier-DevSecOps-Mega-Project.git', 'dev') //change with your repo and branch
+                checkoutRepo('https://github.com/<your-repo>.git', 'dev') //change with your repo and branch
             }
         }
 
