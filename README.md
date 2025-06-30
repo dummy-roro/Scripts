@@ -258,6 +258,8 @@ Sample Jenkinsfile using shared library
 ```bash
 @Library('jenkins-shared-library') _ // Load your shared library
 
+def deployApproved = false // Declare at top level for pipeline-wide scope
+
 pipeline {
     agent any
 
@@ -278,7 +280,7 @@ pipeline {
     stages {
         stage('Cleanup Workspace') {
             steps {
-                cleanWs() 
+                cleanWs()
             }
         }
 
@@ -347,7 +349,7 @@ pipeline {
                 stage('Frontend Build') {
                     steps {
                         dockerBuild(
-                            imageName: '<your docker registery>/frontend-app', //change with your dockerhub username
+                            imageName: '<your docker registry>/frontend-app', //replace with your docker registry
                             imageTag: env.IMAGE_TAG,
                             dockerfile: 'client/Dockerfile',
                             context: 'client'
@@ -357,7 +359,7 @@ pipeline {
                 stage('Backend Build') {
                     steps {
                         dockerBuild(
-                            imageName: '<your docker registery>/backend-app',
+                            imageName: '<your docker registry>/backend-app',
                             imageTag: env.IMAGE_TAG,
                             dockerfile: 'api/Dockerfile',
                             context: 'api'
@@ -372,7 +374,7 @@ pipeline {
                 stage('Frontend Image Scan') {
                     steps {
                         trivyImageScan(
-                            imageName: '<your docker registery>/frontend-app',
+                            imageName: '<your docker registry>/frontend-app',
                             imageTag: env.IMAGE_TAG
                         )
                     }
@@ -380,7 +382,7 @@ pipeline {
                 stage('Backend Image Scan') {
                     steps {
                         trivyImageScan(
-                            imageName: '<your docker registery>/backend-app',
+                            imageName: '<your docker registry>/backend-app',
                             imageTag: env.IMAGE_TAG
                         )
                     }
@@ -393,7 +395,7 @@ pipeline {
                 stage('Frontend Push') {
                     steps {
                         dockerPush(
-                            imageName: '<your docker registery>/frontend-app',
+                            imageName: '<your docker registry>/frontend-app',
                             imageTag: env.IMAGE_TAG,
                             credentials: 'docker-hub-credentials'
                         )
@@ -402,7 +404,7 @@ pipeline {
                 stage('Backend Push') {
                     steps {
                         dockerPush(
-                            imageName: '<your docker registery>/backend-app',
+                            imageName: '<your docker registry>/backend-app',
                             imageTag: env.IMAGE_TAG,
                             credentials: 'docker-hub-credentials'
                         )
@@ -413,7 +415,7 @@ pipeline {
 
         stage('Deploy - AWS EC2') {
             when {
-                branch 'dev/*' // or whatever branch you want
+                expression { env.BRANCH_NAME?.startsWith('dev/') }
             }
             steps {
                 sshagent(credentials: ['aws-dev-deploy-ec2-instance']) {
@@ -432,7 +434,7 @@ pipeline {
                             docker-compose down
                             docker-compose up -d
         
-                            # Optional: Show running containers
+                            # Show running containers
                             docker ps
                         EOF
                     """
@@ -442,13 +444,12 @@ pipeline {
 
         stage('DAST - OWASP ZAP') {
             when {
-                branch 'dev/*'
+                expression { env.BRANCH_NAME?.startsWith('dev/') }
             }
             steps {
                 sh '''
-                    #### REPLACE below with ip http://IP_Address:30000/api-docs/ #####
                     chmod 777 $(pwd)
-                    docker run -v $(pwd):/zap/wrk/:rw  ghcr.io/zaproxy/zaproxy zap-api-scan.py \
+                    docker run -v $(pwd):/zap/wrk/:rw ghcr.io/zaproxy/zaproxy zap-api-scan.py \
                     -t http://<IP>:30000/api-docs/ \
                     -f openapi \
                     -r zap_report.html \
@@ -487,7 +488,7 @@ pipeline {
 
         stage('Deploy to Production') {
             when {
-                expression { return deployApproved } // Only runs if approval was given
+                expression { return deployApproved }
             }
             steps {
                 script {
