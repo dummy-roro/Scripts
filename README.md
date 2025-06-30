@@ -256,7 +256,7 @@ systemctl status jenkins
 ```
 Sample Jenkinsfile using shared library
 ```bash
-@Library('jenkins-shared-library') _
+@Library('jenkins-shared-library') _ // Load your shared library
 
 pipeline {
     agent any
@@ -395,6 +395,20 @@ pipeline {
                         }
                     }
                 }
+            }
+        }
+
+        stage('Update Kubernetes Image Tags') {
+            steps {
+                changeImageTag(
+                    imageTag: env.IMAGE_TAG,               // the new image tag you want
+                    manifestsPath: 'kubernetes',           // path to your k8s manifests in the repo
+                    gitCredentials: 'github-credentials',  // Jenkins credentials ID for git
+                    gitUserName: 'Jenkins CI',
+                    gitUserEmail: 'jenkins@example.com',
+                    repoUrl: 'https://github.com/<your-gitops-repo>/e-commerce-app.git',
+                    // branch is optional, will use env.GIT_BRANCH or 'main'
+                )
             }
         }
     }
