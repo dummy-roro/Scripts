@@ -267,6 +267,8 @@ pipeline {
 
     environment {
         SCANNER_HOME = tool 'sonar-scanner'
+        IMAGE_TAG = "v${env.BUILD_NUMBER}"
+
     }
 
     stages {
@@ -276,15 +278,22 @@ pipeline {
             }
         }
 
-        stage('Frontend Compilation') {
-            steps {
-                frontendCompile('client')
-            }
-        }
-
-        stage('Backend Compilation') {
-            steps {
-                backendCompile('api')
+        stage('Compile') {
+            parallel {
+                stage('Frontend Compile') {
+                    steps {
+                        script {
+                            compileJS('client')
+                        }
+                    }
+                }
+                stage('Backend Compile') {
+                    steps {
+                        script {
+                            compileJS('api')
+                        }
+                    }
+                }
             }
         }
 
@@ -309,6 +318,83 @@ pipeline {
         stage('Trivy FS Scan') {
             steps {
                 trivyScan('.', 'fs-report.html')
+            }
+        }
+
+        stage('Docker Build') {
+            parallel {
+                stage('Frontend Build') {
+                    steps {
+                        script {
+                            dockerBuild(
+                                imageName: '<your docker registery>/frontend-app',
+                                imageTag: env.IMAGE_TAG,
+                                dockerfile: 'client/Dockerfile',
+                                context: 'client'
+                            )
+                        }
+                    }
+                }
+                stage('Backend Build') {
+                    steps {
+                      dockerBuild(
+                                imageName: '<your docker registery>/backend-app',
+                                imageTag: env.IMAGE_TAG,
+                                dockerfile: 'api/Dockerfile',
+                                context: 'api'
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Trivy Image Scan') {
+            parallel {
+                stage('Frontend Image Scan') {
+                    steps {
+                            trivyImageScan(
+                                imageName: '<your docker registery>/frontend-app',
+                                imageTag: env.IMAGE_TAG
+                            )
+                        }
+                    }
+                }
+                stage('Backend Image Scan') {
+                    steps {
+                      trivyImageScan(
+                                imageName: '<your docker registery>/backend-app',
+                                imageTag: env.IMAGE_TAG
+                      )
+                    }
+                }
+            }
+        }
+
+        stage('Docker Push') {
+            parallel {
+                stage('Frontend Push') {
+                    steps {
+                        script {
+                            dockerPush(
+                                imageName: 'yourdockerhub/frontend-app',
+                                imageTag: env.IMAGE_TAG,
+                                credentials: 'docker-hub-credentials'
+                            )
+                        }
+                    }
+                }
+                stage('Backend Push') {
+                    steps {
+                        script {
+                            dockerPush(
+                                imageName: 'yourdockerhub/backend-app',
+                                imageTag: env.IMAGE_TAG,
+                                credentials: 'docker-hub-credentials'
+                            )
+                        }
+                    }
+                }
             }
         }
     }
