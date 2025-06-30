@@ -288,7 +288,7 @@ pipeline {
             }
         }
 
-        stage('Compile') {
+        stage('Compile Code') {
             parallel {
                 stage('Frontend Compile') {
                     steps {
@@ -309,7 +309,22 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
+        stage('SCA-Dependency Scanning') {
+            parallel {
+                stage('NPM Audit') {
+                    steps {
+                        npmAudit(['client', 'api'])
+                    }
+                }
+                stage('OWASP Scan') {
+                    steps {
+                        owaspDependencyCheck(['client', 'api'])
+                    }
+                }
+            }
+        }
+
+        stage('SAST-SonarQube Analysis') {
             steps {
                 sonarAnalysis('NodeJS-Project', 'NodeJS-Project')
             }
@@ -393,6 +408,55 @@ pipeline {
                         )
                     }
                 }
+            }
+        }
+
+        stage('Deploy - AWS EC2') {
+            when {
+                branch 'dev/*' // or whatever branch you want
+            }
+            steps {
+                sshagent(credentials: ['aws-dev-deploy-ec2-instance']) {
+                    sh """
+                        # Copy docker-compose.yml to EC2
+                        scp -o StrictHostKeyChecking=no docker-compose.yml ubuntu@<your-ec2-ip-address>:/home/ubuntu/
+        
+                        # SSH into EC2 and deploy
+                        ssh -o StrictHostKeyChecking=no ubuntu@<your-ec2-ip-address> << EOF
+                            cd /home/ubuntu
+        
+                            # Pull updated images
+                            docker-compose pull
+        
+                            # Recreate and start containers
+                            docker-compose down
+                            docker-compose up -d
+        
+                            # Optional: Show running containers
+                            docker ps
+                        EOF
+                    """
+                }
+            }
+        }
+
+        stage('DAST - OWASP ZAP') {
+            when {
+                branch 'dev/*'
+            }
+            steps {
+                sh '''
+                    #### REPLACE below with ip http://IP_Address:30000/api-docs/ #####
+                    chmod 777 $(pwd)
+                    docker run -v $(pwd):/zap/wrk/:rw  ghcr.io/zaproxy/zaproxy zap-api-scan.py \
+                    -t http://<IP>:30000/api-docs/ \
+                    -f openapi \
+                    -r zap_report.html \
+                    -w zap_report.md \
+                    -J zap_json_report.json \
+                    -x zap_xml_report.xml \
+                    -c zap_ignore_rules
+                '''
             }
         }
 
