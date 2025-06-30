@@ -396,17 +396,48 @@ pipeline {
             }
         }
 
-        stage('Update Kubernetes Image Tags') {
+        stage('Approval for Deployment') {
+            when {
+                branch 'main'
+            }
             steps {
-                changeImageTag(
-                    imageTag: env.IMAGE_TAG,
-                    manifestsPath: 'kubernetes',
-                    gitCredentials: 'github-credentials',
-                    gitUserName: 'Jenkins CI',
-                    gitUserEmail: 'jenkins@example.com',
-                    repoUrl: 'https://github.com/<your-gitops-repo>/e-commerce-app.git', //change with your gitops repo
-                    // (optional add) branch: 'dev'
-                )
+                script {
+                    def response = input(
+                        message: 'Deploy to production?',
+                        ok: 'Submit',
+                        parameters: [
+                            choice(choices: ['Yes', 'No'], name: 'Proceed?', description: 'Choose Yes to deploy')
+                        ]
+                    )
+                    if (response == 'Yes') {
+                        echo "✅ Approved for production"
+                        deployApproved = true
+                    } else {
+                        echo "❌ Not approved. Aborting pipeline."
+                        currentBuild.result = 'ABORTED'
+                        error("Pipeline stopped by user.")
+                    }
+                }
+            }
+        }
+
+        stage('Deploy to Production') {
+            when {
+                expression { return deployApproved } // Only runs if approval was given
+            }
+            steps {
+                script {
+                    echo "🚀 Deploying to production..."
+
+                    changeImageTag(
+                        imageTag: env.IMAGE_TAG,
+                        manifestsPath: 'kubernetes',
+                        gitCredentials: 'github-credentials',
+                        gitUserName: 'Jenkins CI',
+                        gitUserEmail: 'jenkins@example.com',
+                        repoUrl: 'https://github.com/<your-gitops-repo>/your-app.git'
+                    )
+                }
             }
         }
     }
