@@ -268,10 +268,20 @@ pipeline {
     environment {
         SCANNER_HOME = tool 'sonar-scanner'
         IMAGE_TAG = "v${env.BUILD_NUMBER}"
+    }
 
+    options {
+        disableResume()
+        disableConcurrentBuilds abortPrevious: true
     }
 
     stages {
+        stage('Cleanup Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+
         stage('Git Checkout') {
             steps {
                 checkoutRepo('https://github.com/jaiswaladi246/3-Tier-DevSecOps-Mega-Project.git', 'dev')
@@ -282,16 +292,12 @@ pipeline {
             parallel {
                 stage('Frontend Compile') {
                     steps {
-                        script {
-                            compileJS('client')
-                        }
+                        compileJS('client')
                     }
                 }
                 stage('Backend Compile') {
                     steps {
-                        script {
-                            compileJS('api')
-                        }
+                        compileJS('api')
                     }
                 }
             }
@@ -325,25 +331,22 @@ pipeline {
             parallel {
                 stage('Frontend Build') {
                     steps {
-                        script {
-                            dockerBuild(
-                                imageName: '<your docker registery>/frontend-app',
-                                imageTag: env.IMAGE_TAG,
-                                dockerfile: 'client/Dockerfile',
-                                context: 'client'
-                            )
-                        }
+                        dockerBuild(
+                            imageName: '<your docker registery>/frontend-app',
+                            imageTag: env.IMAGE_TAG,
+                            dockerfile: 'client/Dockerfile',
+                            context: 'client'
+                        )
                     }
                 }
                 stage('Backend Build') {
                     steps {
-                      dockerBuild(
-                                imageName: '<your docker registery>/backend-app',
-                                imageTag: env.IMAGE_TAG,
-                                dockerfile: 'api/Dockerfile',
-                                context: 'api'
-                            )
-                        }
+                        dockerBuild(
+                            imageName: '<your docker registery>/backend-app',
+                            imageTag: env.IMAGE_TAG,
+                            dockerfile: 'api/Dockerfile',
+                            context: 'api'
+                        )
                     }
                 }
             }
@@ -353,19 +356,18 @@ pipeline {
             parallel {
                 stage('Frontend Image Scan') {
                     steps {
-                            trivyImageScan(
-                                imageName: '<your docker registery>/frontend-app',
-                                imageTag: env.IMAGE_TAG
-                            )
-                        }
+                        trivyImageScan(
+                            imageName: '<your docker registery>/frontend-app',
+                            imageTag: env.IMAGE_TAG
+                        )
                     }
                 }
                 stage('Backend Image Scan') {
                     steps {
-                      trivyImageScan(
-                                imageName: '<your docker registery>/backend-app',
-                                imageTag: env.IMAGE_TAG
-                      )
+                        trivyImageScan(
+                            imageName: '<your docker registery>/backend-app',
+                            imageTag: env.IMAGE_TAG
+                        )
                     }
                 }
             }
@@ -375,24 +377,20 @@ pipeline {
             parallel {
                 stage('Frontend Push') {
                     steps {
-                        script {
-                            dockerPush(
-                                imageName: 'yourdockerhub/frontend-app',
-                                imageTag: env.IMAGE_TAG,
-                                credentials: 'docker-hub-credentials'
-                            )
-                        }
+                        dockerPush(
+                            imageName: '<your docker registery>/frontend-app',
+                            imageTag: env.IMAGE_TAG,
+                            credentials: 'docker-hub-credentials'
+                        )
                     }
                 }
                 stage('Backend Push') {
                     steps {
-                        script {
-                            dockerPush(
-                                imageName: 'yourdockerhub/backend-app',
-                                imageTag: env.IMAGE_TAG,
-                                credentials: 'docker-hub-credentials'
-                            )
-                        }
+                        dockerPush(
+                            imageName: '<your docker registery>/backend-app',
+                            imageTag: env.IMAGE_TAG,
+                            credentials: 'docker-hub-credentials'
+                        )
                     }
                 }
             }
@@ -401,13 +399,13 @@ pipeline {
         stage('Update Kubernetes Image Tags') {
             steps {
                 changeImageTag(
-                    imageTag: env.IMAGE_TAG,               // the new image tag you want
-                    manifestsPath: 'kubernetes',           // path to your k8s manifests in the repo
-                    gitCredentials: 'github-credentials',  // Jenkins credentials ID for git
+                    imageTag: env.IMAGE_TAG,
+                    manifestsPath: 'kubernetes',
+                    gitCredentials: 'github-credentials',
                     gitUserName: 'Jenkins CI',
                     gitUserEmail: 'jenkins@example.com',
-                    repoUrl: 'https://github.com/<your-gitops-repo>/e-commerce-app.git',
-                    // branch is optional, will use env.GIT_BRANCH or 'main'
+                    repoUrl: 'https://github.com/<your-gitops-repo>/e-commerce-app.git', //change with your gitops repo
+                    // (optional add) branch: 'dev'
                 )
             }
         }
