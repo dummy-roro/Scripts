@@ -272,19 +272,19 @@ pipeline {
 
     options {
         disableResume()
-        disableConcurrentBuilds abortPrevious: true
+        disableConcurrentBuilds abortPrevious: true 
     }
 
     stages {
         stage('Cleanup Workspace') {
             steps {
-                cleanWs()
+                cleanWs() 
             }
         }
 
         stage('Git Checkout') {
             steps {
-                checkoutRepo('https://github.com/jaiswaladi246/3-Tier-DevSecOps-Mega-Project.git', 'dev')
+                checkoutRepo('https://github.com/jaiswaladi246/3-Tier-DevSecOps-Mega-Project.git', 'dev') //change with your repo and branch
             }
         }
 
@@ -332,7 +332,7 @@ pipeline {
                 stage('Frontend Build') {
                     steps {
                         dockerBuild(
-                            imageName: '<your docker registery>/frontend-app',
+                            imageName: '<your docker registery>/frontend-app', //change with your dockerhub username
                             imageTag: env.IMAGE_TAG,
                             dockerfile: 'client/Dockerfile',
                             context: 'client'
