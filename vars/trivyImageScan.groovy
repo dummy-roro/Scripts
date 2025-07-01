@@ -1,13 +1,44 @@
 def call(Map config = [:]) {
-    def imageName = config.imageName ?: error("Docker image name is required")
-    def imageTag = config.imageTag ?: 'latest'
-    def outputFile = config.outputFile ?: "${imageName.replaceAll('/', '_')}-${imageTag}-trivy-image-report.html"
+    def imageName = config.imageName ?: error("imageName is required")
+    def imageTag = config.imageTag ?: "latest"
 
-    echo "🔍 Scanning Docker image: ${imageName}:${imageTag} with Trivy"
+    stage('Trivy Vulnerability Scanner') {
+        steps {
+            script {
+                sh """
+                    echo "[*] Running Trivy scan for: ${imageName}:${imageTag}"
 
-    sh """
-        trivy image --format html -o ${outputFile} ${imageName}:${imageTag}
-    """
+                    trivy image ${imageName}:${imageTag} \
+                        --severity LOW,MEDIUM,HIGH \
+                        --exit-code 0 \
+                        --quiet \
+                        --format json -o trivy-image-MEDIUM-results.json
 
-    echo "📄 Trivy scan report generated: ${outputFile}"
+                    trivy image ${imageName}:${imageTag} \
+                        --severity CRITICAL \
+                        --exit-code 1 \
+                        --quiet \
+                        --format json -o trivy-image-CRITICAL-results.json
+                """
+            }
+        }
+
+        post {
+            always {
+                script {
+                    sh """
+                        echo "[*] Generating HTML and JUnit reports..."
+
+                        trivy convert \
+                            --format template --template "@/usr/local/share/trivy/templates/html.tpl" \
+                            --output trivy-image-MEDIUM-results.html trivy-image-MEDIUM-results.json 
+
+                        trivy convert \
+                            --format template --template "@/usr/local/share/trivy/templates/html.tpl" \
+                            --output trivy-image-CRITICAL-results.html trivy-image-CRITICAL-results.json 
+                    """
+                }
+            }
+        }
+    }
 }
