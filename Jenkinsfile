@@ -98,7 +98,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh  'printenv'
-                sh  'docker build -t siddharth67/solar-system:$GIT_COMMIT .'
+                sh  'docker build -t dummyroro/solar-system:$GIT_COMMIT .'
             }
         }
 
@@ -202,7 +202,7 @@ pipeline {
                         #### Replace Docker Tag ####
                         git checkout main
                         git checkout -b feature-$BUILD_ID
-                        sed -i "s#siddharth67.*#siddharth67/solar-system:$GIT_COMMIT#g" deployment.yml
+                        sed -i "s#dummyroro.*#dummyroro/solar-system:$GIT_COMMIT#g" deployment.yml
                         cat deployment.yml
                         
                         #### Commit and Push to Feature Branch ####
