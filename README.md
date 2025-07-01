@@ -37,6 +37,7 @@ Walk through of the process of setting up a robust infrastructure on AWS using E
   - Canary
 - Chaos Engineering
   - Litmus
+  - Chaos Mesh
 ---
 # 🛠️ Tools Installation
 ### Iac Tools
@@ -701,6 +702,18 @@ Apply the Sealed Secret to the Cluster
 kubectl apply -f sealedsecret.yaml
 ```
 Integration with Vault will add soon
+# Istio
+Install istio using helm
+```bash
+helm repo add istio https://istio-release.storage.googleapis.com/charts
+helm repo update
+helm install istio-base istio/base -n istio-system --create-namespace
+helm install istiod istio/istiod -n istio-system
+```
+Enable automatic sidecar injection for the default namespace:
+```bash
+kubectl label namespace default istio-injection=enabled
+```
 ---
 # Deployment Strategries
 ## 1. Rolling Update (Default in Kubernetes)
