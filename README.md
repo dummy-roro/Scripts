@@ -21,6 +21,7 @@ Walk through of the process of setting up a robust infrastructure on AWS using E
   - Docker
 - CD
   - ArgoCD
+  - Sealed Secrect
 - Security Tools
   - SonarQube
   - Nexus
@@ -524,7 +525,6 @@ sudo usermod -aG docker ubuntu
 sudo systemctl restart docker
 sudo chmod 777 /var/run/docker.sock #optional
 ```
-
 ---
 
 ## 🧪 SonarQube (Docker)
@@ -573,10 +573,18 @@ Then start it with:
 docker-compose up -d
 ```
 ---
+## 🔐 Installing Security Tools
 
+### Install Trivy
 
-
-
+```bash
+#install trivy
+sudo apt-get install -y wget gnupg lsb-release
+wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/trivy.list
+sudo apt update
+sudo apt install trivy -y
+```
 ---
 
 ## 🧭 Installing Argo CD On K8s
@@ -637,23 +645,6 @@ kubectl create secret docker-registry github-container-registry \
   -n your-namespace
 ```
 ---
-
-## 🔐 Installing Security Tools
-
-### Install Trivy
-
-```bash
-#install trivy
-sudo apt-get install -y wget gnupg lsb-release
-wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
-echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/trivy.list
-sudo apt update
-sudo apt install trivy -y
-```
-
----
-
-
 ## Sealed Secrect
 Install kubeseal CLI (Local Machine or on Bastion Host)
 
