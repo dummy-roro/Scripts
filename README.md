@@ -744,6 +744,39 @@ Integration with Vault will add soon
 ---
 # Monitoring & Logging
 ## Prometheus & Grafana
+Add the Helm repo
+```bash
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+```
+Install the kube-prometheus-stack
+```bash
+helm install prometheus-stack prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace
+```
+Prometheus UI:
+```bash
+kubectl port-forward svc/prometheus-stack-kube-prometheus-prometheus -n monitoring 9090 --address=0.0.0.0
+```
+Visit:
+```bash
+http://<your-machine-ip>:9090
+```
+Grafana:
+```bash
+kubectl port-forward svc/prometheus-stack-grafana -n monitoring 3000 --address=0.0.0.0
+```
+Visit:
+```bash
+http://<your-machine-ip>:3000
+```
+Default login username:
+```bash
+admin
+```
+Password: (get from secret)
+```bash
+kubectl get secret --namespace monitoring prometheus-stack-grafana -o jsonpath="{.data.admin-password}" | base64 --decode
+```
 ---
 ## ELK/EFK
 ```bash
