@@ -880,7 +880,11 @@ kubectl apply -f kibana.yaml
 ```bash
 kubectl get pods -n logging
 ```
-Access via <your-machine-ip>:30601
+---
+Access Kibana UI via 
+```bash
+<your-machine-ip>:30601
+```
 ---
 Deploy Logstash
 ```bash
