@@ -16,7 +16,7 @@ Walk through of the process of setting up a robust infrastructure on AWS using E
 
 ## Article
 
-- [Tools Installation](#Tools-Installation)
+- [Tools Installation](# 🛠️ Tools Installation)
   - Iac
     - Terraform
     - OpenTofu
