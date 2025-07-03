@@ -994,10 +994,20 @@ spec:
     - protocol: TCP
       port: 5044
       targetPort: 5044
+```
+save as logstash.yaml
+```bash
 kubectl apply -f logstash.yaml
+```
+To check
+```bash
 kubectl get all -n logging
+```
+```bash
+watch -n 1 kubectl get po -n logging
+```
 Deploy Filebeat as Daemonset:
----
+```bash
 apiVersion: v1
 kind: ConfigMap
 metadata:
