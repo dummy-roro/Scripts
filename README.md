@@ -17,7 +17,7 @@ Walk through of the process of setting up a robust infrastructure on AWS using E
 ## Article
 
 - [Tools Installation](#Tools-Installation)
-  - [Iac](#Iac)
+  - [Iac](#Iac-Tools)
     - [Terraform](#Terraform)
     - OpenTofu
     - Ansible
@@ -56,8 +56,8 @@ Walk through of the process of setting up a robust infrastructure on AWS using E
   - Chaos Mesh
 ---
 # Tools Installation
-### Iac Tools
-Terraform 
+## Iac Tools
+### Terraform 
 ```bash
 #install terraform
 wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
