@@ -145,6 +145,46 @@ sudo snap install helm --classic
 ---
 # Setting Up Infrastructure
 ## EKS Cluster
+EKS Cluster using eksctl
+```bash
+#create cluster
+eksctl create cluster --name=democluster \
+                      --region=us-east-1 \
+                      --zones=us-east-1a,us-east-1b \
+                      --without-nodegroup
+```
+```bash
+#create oidc provider
+eksctl utils associate-iam-oidc-provider \
+    --region us-east-1 \
+    --cluster democluster \
+    --approve
+```
+```bash
+#create node group
+eksctl create nodegroup --cluster=democluster \
+                        --region=us-east-1 \
+                        --name=observability-ng-private \
+                        --node-type=t3.medium \
+                        --nodes-min=2 \
+                        --nodes-max=3 \
+                        --node-volume-size=50 \
+                        --managed \
+                        --asg-access \
+                        --external-dns-access \
+                        --full-ecr-access \
+                        --appmesh-access \
+                        --alb-ingress-access \
+                        --node-private-networking
+```
+To access cluster
+```bash
+# Update ./kube/config file
+aws eks update-kubeconfig --name observability
+```
+---
+EKS Cluster using Terraform
+
 Prerequisite - We need to create an IAM user and generate the AWS Access key and Awscli, Terraform or OpenTofu must installed
 ```bash
 aws configure #add cred copied from IAM user
@@ -794,12 +834,20 @@ Default login username:
 ```bash
 admin
 ```
-Password: (get from secret)
+Password: (get from secret) # Default password is prom-operator
 ```bash
 kubectl get secret --namespace monitoring prometheus-stack-grafana -o jsonpath="{.data.admin-password}" | base64 --decode
 ```
+Alertmanager:
+```bash
+kubectl port-forward svc/kube-prom-stack-alertmanager -n monitoring 9093 --address=0.0.0.0
+```
+Visit:
+```bash
+http://<your-machine-ip>:9093
+```
 ---
-## ELK/EFK
+## ELK
 ```bash
 kubectl create namespace logging
 ```
@@ -1245,6 +1293,71 @@ kubectl exec -n logging -it <logstash-pod> -- cat /usr/share/logstash/pipeline/l
 ```
 ---
 ### EFK Stack
+Create IAM Role for Service Account
+```bash
+eksctl create iamserviceaccount \
+    --name ebs-csi-controller-sa \
+    --namespace kube-system \
+    --cluster observability \
+    --role-name AmazonEKS_EBS_CSI_DriverRole \
+    --role-only \
+    --attach-policy-arn arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy \
+    --approve
+```
+This command creates an IAM role for the EBS CSI controller.
+
+IAM role allows EBS CSI controller to interact with AWS resources, specifically for managing EBS volumes in the Kubernetes cluster.
+
+We will attach the Role with service account
+
+Retrieve IAM Role ARN
+```bash
+ARN=$(aws iam get-role --role-name AmazonEKS_EBS_CSI_DriverRole --query 'Role.Arn' --output text)
+```
+Command retrieves the ARN of the IAM role created for the EBS CSI controller service account.
+Deploy EBS CSI Driver
+```bash
+eksctl create addon --cluster observability --name aws-ebs-csi-driver --version latest \
+    --service-account-role-arn $ARN --force
+```
+Above command deploys the AWS EBS CSI driver as an addon to your Kubernetes cluster.
+It uses the previously created IAM service account role to allow the driver to manage EBS volumes securely.
+Create Namespace for Logging
+```bash
+kubectl create namespace logging
+```
+Install Elasticsearch on K8s
+```bash
+helm repo add elastic https://helm.elastic.co
+helm install elasticsearch \
+ --set replicas=1 \
+ --set volumeClaimTemplate.storageClassName=gp2 \
+ --set persistence.labels.enabled=true elastic/elasticsearch -n logging
+```
+Installs Elasticsearch in the logging namespace.
+It sets the number of replicas, specifies the storage class, and enables persistence labels to ensure data is stored on persistent volumes.
+Retrieve Elasticsearch Username & Password
+```bash
+# for username
+kubectl get secrets --namespace=logging elasticsearch-master-credentials -ojsonpath='{.data.username}' | base64 -d
+# for password
+kubectl get secrets --namespace=logging elasticsearch-master-credentials -ojsonpath='{.data.password}' | base64 -d
+```
+Retrieves the password for the Elasticsearch cluster's master credentials from the Kubernetes secret.
+The password is base64 encoded, so it needs to be decoded before use.
+👉 Note: Please write down the password for future reference
+Install Kibana
+```bash
+helm install kibana --set service.type=LoadBalancer elastic/kibana -n logging
+```
+Kibana provides a user-friendly interface for exploring and visualizing data stored in Elasticsearch.
+It is exposed as a LoadBalancer service, making it accessible from outside the cluster.
+Install Fluentbit with Custom Values/Configurations
+👉 Note: Please update the HTTP_Passwd field in the fluentbit-values.yml file with the password retrieved earlier in step 6: (i.e NJyO47UqeYBsoaEU)"
+```bash
+helm repo add fluent https://fluent.github.io/helm-charts
+helm install fluent-bit fluent/fluent-bit -f fluentbit-values.yaml -n logging
+```
 ---
 ## Tracing
 ### Jaeger
