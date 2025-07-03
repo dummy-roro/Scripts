@@ -19,7 +19,7 @@ Walk through of the process of setting up a robust infrastructure on AWS using E
 - [Tools Installation](#Tools-Installation)
   - [Iac](#Iac-Tools)
     - [Terraform](#Terraform)
-    - OpenTofu
+    - [OpenTofu](#or-you-can-use-opentofu)
     - Ansible
   - AWS CLI
   - Kubernetes Stack
