@@ -40,9 +40,11 @@ Walk through of the process of setting up a robust infrastructure on AWS using E
 - Secrect Management
   - Sealed Secret
   - Vault
-- Observability 
+- Monitoring & Observability
   - Prometheus & Grafana
+- Logging
   - ELK/EFK
+- Tracing
   - Jaeger
 - Service Mesh
   - Istio
@@ -1241,6 +1243,11 @@ Verify that logstash.conf exists
 kubectl exec -n logging -it <logstash-pod> -- ls /usr/share/logstash/pipeline/
 kubectl exec -n logging -it <logstash-pod> -- cat /usr/share/logstash/pipeline/logstash.conf
 ```
+---
+### EFK Stack
+---
+## Tracing
+### Jaeger
 ---
 # Service Mesh 
 ## Istio
