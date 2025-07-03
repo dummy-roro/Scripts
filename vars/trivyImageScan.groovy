@@ -27,7 +27,7 @@ def call(Map config = [:]) {
             always {
                 script {
                     sh """
-                        echo "[*] Generating HTML and JUnit reports..."
+                        echo "[*] Generating HTML reports..."
 
                         trivy convert \
                             --format template --template "@/usr/local/share/trivy/templates/html.tpl" \
