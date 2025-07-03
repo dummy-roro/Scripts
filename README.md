@@ -847,7 +847,7 @@ Visit:
 http://<your-machine-ip>:9093
 ```
 ---
-## ELK
+## ELK Stack
 ```bash
 kubectl create namespace logging
 ```
@@ -1359,8 +1359,51 @@ helm repo add fluent https://fluent.github.io/helm-charts
 helm install fluent-bit fluent/fluent-bit -f fluentbit-values.yaml -n logging
 ```
 ---
-## Tracing
-### Jaeger
+# Tracing
+## Jaeger
+### Components of Jaeger
+Jaeger consists of several components:
+
+Agent: Collects traces from your application.
+
+Collector: Receives traces from the agent and processes them.
+
+Query: Provides a UI to view traces.
+
+Storage: Stores traces for later retrieval (often a database like Elasticsearch).
+
+Export Elasticsearch CA Certificate
+This command retrieves the CA certificate from the Elasticsearch master certificate secret and decodes it, saving it to a ca-cert.pem file.
+```bash
+kubectl get secret elasticsearch-master-certs -n logging -o jsonpath='{.data.ca\.crt}' | base64 --decode > ca-cert.pem
+```
+Create Tracing Namespace
+```bash
+kubectl create ns tracing
+```
+Create ConfigMap for Jaeger's TLS Certificate
+```bash
+kubectl create configmap jaeger-tls --from-file=ca-cert.pem -n tracing
+```
+Create Secret for Elasticsearch TLS
+```bash
+kubectl create secret generic es-tls-secret --from-file=ca-cert.pem -n tracing
+```
+Add Jaeger Helm Repository
+```bash
+helm repo add jaegertracing https://jaegertracing.github.io/helm-charts
+helm repo update
+```
+Install Jaeger with Custom Values
+👉 Note: Please update the password field and other related field in the jaeger-values.yaml file with the password retrieved earlier in day-4 at step 6: (i.e NJyO47UqeYBsoaEU)"
+Command installs Jaeger into the tracing namespace using a custom jaeger-values.yaml configuration file. Ensure the password is updated in the file before installation.
+```bash
+helm install jaeger jaegertracing/jaeger -n tracing --values jaeger-values.yaml
+```
+Port Forward Jaeger Query Service
+```bash
+kubectl port-forward svc/jaeger-query 8080:80 -n tracing
+```
 ---
 # Service Mesh 
 ## Istio
