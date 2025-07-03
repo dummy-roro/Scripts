@@ -16,7 +16,7 @@ Walk through of the process of setting up a robust infrastructure on AWS using E
 
 ## Article
 
-- Tools Installation
+- [Tools Installation](#Tools-Installation)
   - Iac
     - Terraform
     - OpenTofu
@@ -40,10 +40,10 @@ Walk through of the process of setting up a robust infrastructure on AWS using E
 - Secrect Management
   - Sealed Secret
   - Vault
-  - For secure Kubernetes secret management, check out [HashiCorp Vault](https://www.vaultproject.io) and [Sealed Secrets](https://github.com/bitnami-labs/sealed-secrets).
-- Monitoring & Logging
+- Observability 
   - Prometheus & Grafana
   - ELK/EFK
+  - Jaeger
 - Service Mesh
   - Istio
 - Deployment Strategries
