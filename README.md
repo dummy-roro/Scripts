@@ -31,13 +31,16 @@ Walk through of the process of setting up a robust infrastructure on AWS using E
 - CI
   - Java, Jenkins,
   - Docker
-- CD
-  - ArgoCD
-  - Sealed Secrect
 - Security Tools
   - SonarQube
   - Nexus
   - Trivy
+- CD
+  - ArgoCD
+- Secrect Management
+  - Sealed Secret
+  - Vault
+  - For secure Kubernetes secret management, check out [HashiCorp Vault](https://www.vaultproject.io) and [Sealed Secrets](https://github.com/bitnami-labs/sealed-secrets).
 - Monitoring & Logging
   - Prometheus & Grafana
   - ELK/EFK
