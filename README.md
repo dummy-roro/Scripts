@@ -1,7 +1,5 @@
 # 🚀 DevOps Environment Setup
 [![LinkedIn](https://img.shields.io/badge/Connect%20with%20me%20on-LinkedIn-blue.svg)](https://www.linkedin.com/in/myat-soe-aumg/)
-[![GitHub](https://img.shields.io/github/stars/AmanPathak-DevOps.svg?style=social)](https://github.com/dummy-roro)
-[![Serverless](https://img.shields.io/badge/Serverless-%E2%9A%A1%EF%B8%8F-blueviolet)](https://www.serverless.com)
 [![AWS](https://img.shields.io/badge/AWS-%F0%9F%9B%A1-orange)](https://aws.amazon.com)
 [![Terraform](https://img.shields.io/badge/Terraform-%E2%9C%A8-lightgrey)](https://www.terraform.io)
 [![Docker](https://img.shields.io/badge/Docker-%231572B6?logo=docker&logoColor=white)](https://www.docker.com)
@@ -10,7 +8,6 @@
 [![ELK](https://img.shields.io/badge/ELK-Stack-blueviolet)](https://www.elastic.co/what-is/elk-stack)
 [![EFK](https://img.shields.io/badge/EFK-Stack-orange)](https://www.elastic.co/what-is/efk-stack)
 [![Jaeger](https://img.shields.io/badge/Jaeger-Tracing-ff69b4)](https://www.jaegertracing.io/)
-[![OpenTelemetry](https://img.shields.io/badge/OpenTelemetry-Observability-yellowgreen)](https://opentelemetry.io/)
 [![Chaos Mesh](https://img.shields.io/badge/ChaosMesh-%23C9274C?style=for-the-badge&logo=Kubernetes&logoColor=white)](https://chaos-mesh.org)
 [![Litmus Chaos](https://img.shields.io/badge/LitmusChaos-%230073B5?style=for-the-badge&logo=Apache%20Chaos&logoColor=white)](https://litmuschaos.io)
 
