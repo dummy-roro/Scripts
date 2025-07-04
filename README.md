@@ -11,6 +11,8 @@
 [![EFK](https://img.shields.io/badge/EFK-Stack-orange)](https://www.elastic.co/what-is/efk-stack)
 [![Jaeger](https://img.shields.io/badge/Jaeger-Tracing-ff69b4)](https://www.jaegertracing.io/)
 [![OpenTelemetry](https://img.shields.io/badge/OpenTelemetry-Observability-yellowgreen)](https://opentelemetry.io/)
+[![Chaos Mesh](https://img.shields.io/badge/ChaosMesh-%23C9274C?style=for-the-badge&logo=Kubernetes&logoColor=white)](https://chaos-mesh.org)
+[![Litmus Chaos](https://img.shields.io/badge/LitmusChaos-%230073B5?style=for-the-badge&logo=Apache%20Chaos&logoColor=white)](https://litmuschaos.io)
 
 Walk through of the process of setting up a robust infrastructure on AWS using EKS, DevOps best practices, and security measures. This project aims to provide necessary commands and resources to get hands-on experience in deploying, securing, and monitoring a scalable application environment and infra. (Note: All commands are for Linux:Ubuntu)
 
