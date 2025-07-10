@@ -367,7 +367,7 @@ systemctl status jenkins
 Jenkinsfile for Terraform Actions to create EKS cluster using shared library
 
 ```bash
-@Library('your-shared-lib') _
+@Library('jenkins-shared-library') _ // Load your shared library
 
 pipeline {
     agent any
@@ -376,6 +376,14 @@ pipeline {
         string(name: 'env', defaultValue: 'dev', description: 'Environment')
     }
     stages {
+        stage('Git Checkout') {
+            steps {
+                script {
+                    checkoutRepo('https://github.com/your-org/your-repo.git', 'main')  // change with your repo and branch
+                }
+            }
+        }
+
         stage('Init') {
             steps {
                 script {
@@ -388,6 +396,7 @@ pipeline {
                 }
             }
         }
+
         stage('Validate') {
             steps {
                 script {
@@ -400,6 +409,7 @@ pipeline {
                 }
             }
         }
+
         stage('Terraform Action') {
             steps {
                 script {
@@ -459,7 +469,7 @@ pipeline {
 
         stage('Git Checkout') {
             steps {
-                checkoutRepo('https://github.com/<your-repo>.git', 'dev') //change with your repo and branch
+                checkoutRepo('https://github.com/<your-repo>.git', 'dev')  // change with your repo and branch
             }
         }
 
