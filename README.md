@@ -363,7 +363,71 @@ You can use below command to get Jenkins Admin Password
 ```bash
 systemctl status jenkins
 ```
-Sample Jenkinsfile using shared library
+
+Jenkinsfile for Terraform Actions to create EKS cluster using shared library
+
+```bash
+@Library('your-shared-lib') _
+
+pipeline {
+    agent any
+    parameters {
+        choice(name: 'terraformAction', choices: ['plan', 'apply', 'destroy'], description: 'Terraform Action')
+        string(name: 'env', defaultValue: 'dev', description: 'Environment')
+    }
+    stages {
+        stage('Init') {
+            steps {
+                script {
+                    init([
+                        awsCreds: 'aws-creds',
+                        awsRegion: 'us-east-1',
+                        terraformDir: 'eks',
+                        env: params.env
+                    ])
+                }
+            }
+        }
+        stage('Validate') {
+            steps {
+                script {
+                    validate([
+                        awsCreds: 'aws-creds',
+                        awsRegion: 'us-east-1',
+                        terraformDir: 'eks',
+                        env: params.env
+                    ])
+                }
+            }
+        }
+        stage('Terraform Action') {
+            steps {
+                script {
+                    def config = [
+                        awsCreds: 'aws-creds',
+                        awsRegion: 'us-east-1',
+                        terraformDir: 'eks',
+                        env: params.env
+                    ]
+
+                    if (params.terraformAction == 'plan') {
+                        plan(config)
+                    } else if (params.terraformAction == 'apply') {
+                        apply(config)
+                    } else if (params.terraformAction == 'destroy') {
+                        destroy(config)
+                    } else {
+                        error "Invalid action ${params.terraformAction}"
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+Jenkinsfile for CI pipeline using shared library
+
 ```bash
 @Library('jenkins-shared-library') _ // Load your shared library
 
