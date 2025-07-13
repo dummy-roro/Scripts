@@ -1,4 +1,4 @@
-def call(Map config = [:]) {
+def trivyScan(Map config = [:]) {
     def imageName = config.imageName ?: error("imageName is required")
     def imageTag = config.imageTag ?: "latest"
 
@@ -17,7 +17,9 @@ def call(Map config = [:]) {
             --quiet \\
             --format json -o trivy-image-CRITICAL-results.json
     """
+}
 
+def trivyConvertReports() {
     echo "[*] Generating HTML reports..."
 
     sh """
