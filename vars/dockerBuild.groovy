@@ -3,12 +3,10 @@ def call(Map config = [:]) {
     def imageTag = config.imageTag ?: 'latest'
     def context = config.context ?: '.'
     def dockerfile = config.dockerfile ?: 'Dockerfile'
-    
-    echo "Building Docker image: ${imageName}:${imageTag} using ${dockerfile} in ${context}"
-    
-    dir(context) {
-        sh """
-            docker build -t ${imageName}:${imageTag} -t ${imageName}:latest -f ${dockerfile} .
-        """
-    }
+
+    echo "Building Docker image: ${imageName}:${imageTag} using Dockerfile '${dockerfile}' and context '${context}'"
+
+    sh """
+        docker build -t "${imageName}:${imageTag}" -t "${imageName}:latest" -f ${dockerfile} ${context}
+    """
 }
