@@ -1,9 +1,4 @@
-def call(List<String> dirs = []) {
-    dirs.each { dir ->
-        echo "Running npm audit in ${dir}"
-        dir(dir) {
-            sh 'npm install --legacy-peer-deps' // Optional
-            sh 'npm audit --audit-level=critical'
-        }
-    }
+def call() {
+    sh 'npm install --legacy-peer-deps'
+    sh 'npm audit --audit-level=critical'
 }
