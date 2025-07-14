@@ -364,13 +364,13 @@ You can use below command to get Jenkins Admin Password
 systemctl status jenkins
 ```
 
-Configure Jenkins to use shared library
+### Configure Jenkins to use shared library
 
-Go to Jenkins Dashboard > Manage Jenkins > Configure System
+1 Go to Jenkins Dashboard > Manage Jenkins > Configure System
 
-Scroll to Global Pipeline Libraries
+2 Scroll to Global Pipeline Libraries
 
-Click Add
+3 Click Add
 
   - Name: shared-lib (You’ll use this name in your pipeline)
 
