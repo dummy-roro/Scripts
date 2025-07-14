@@ -4,7 +4,7 @@ def call(Map config = [:]) {
     def gitCredentials = config.gitCredentials ?: 'github-credentials'
     def gitUserName = config.gitUserName ?: 'Jenkins CI'
     def gitUserEmail = config.gitUserEmail ?: 'jenkins@example.com'
-    def repoUrl = config.repoUrl ?: 'https://github.com/<your-gitops-repo>/e-commerce-app.git'
+    def repoUrl = config.repoUrl ?: 'https://github.com/<your-gitops-repo>/name.git'
     def branch = env.GIT_BRANCH ?: 'dev'
 
     echo "Updating Kubernetes deployment manifests with image tag: ${imageTag}"
@@ -31,12 +31,7 @@ def call(Map config = [:]) {
             sh """
                 (
                     sed -i "s|image: trainwithshubham/easyshop-frontend:.*|image: dummyroro/easyshop-frontend:${imageTag}|g" ${manifestsPath}/frontend-deployment.yaml
-                ) &
-
-                (
-                    sed -i "s|image: trainwithshubham/easyshop-backend:.*|image: dummyroro/easyshop-backend:${imageTag}|g" ${manifestsPath}/backend-deployment.yaml
-                ) &
-
+                )
                 wait
             """
 
