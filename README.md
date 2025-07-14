@@ -372,7 +372,7 @@ systemctl status jenkins
 
 3. Click Add
 
-  - Name: shared-lib (You’ll use this name in your pipeline)
+  - Name: jenkins-shared-library (You’ll use this name in your pipeline)
 
   - Default version: main (or any branch)
 
