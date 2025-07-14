@@ -1,34 +1,38 @@
-def trivyScan(Map config = [:]) {
+def call(Map config = [:]) {
     def imageName = config.imageName ?: error("imageName is required")
     def imageTag = config.imageTag ?: "latest"
+    def outputDir = config.outputDir ?: "."
+    def failOnCritical = config.get('failOnCritical', true)
 
-    echo "[*] Running Trivy scan for: ${imageName}:${imageTag}"
+    echo "[*] Running full Trivy scan + HTML report for: ${imageName}:${imageTag}"
 
     sh """
+        mkdir -p "${outputDir}"
+
         trivy image ${imageName}:${imageTag} \\
             --severity LOW,MEDIUM,HIGH \\
             --exit-code 0 \\
             --quiet \\
-            --format json -o trivy-image-MEDIUM-results.json
+            --format json -o "${outputDir}/trivy-image-MEDIUM-results.json"
 
         trivy image ${imageName}:${imageTag} \\
             --severity CRITICAL \\
-            --exit-code 1 \\
+            --exit-code ${failOnCritical ? 1 : 0} \\
             --quiet \\
-            --format json -o trivy-image-CRITICAL-results.json
-    """
-}
-
-def trivyConvertReports() {
-    echo "[*] Generating HTML reports..."
-
-    sh """
-        trivy convert \\
-            --format template --template "@/usr/local/share/trivy/templates/html.tpl" \\
-            --output trivy-image-MEDIUM-results.html trivy-image-MEDIUM-results.json 
+            --format json -o "${outputDir}/trivy-image-CRITICAL-results.json"
 
         trivy convert \\
-            --format template --template "@/usr/local/share/trivy/templates/html.tpl" \\
-            --output trivy-image-CRITICAL-results.html trivy-image-CRITICAL-results.json 
+            --format template \\
+            --template "@/usr/local/share/trivy/templates/html.tpl" \\
+            --output "${outputDir}/trivy-image-MEDIUM-results.html" \\
+            "${outputDir}/trivy-image-MEDIUM-results.json"
+
+        trivy convert \\
+            --format template \\
+            --template "@/usr/local/share/trivy/templates/html.tpl" \\
+            --output "${outputDir}/trivy-image-CRITICAL-results.html" \\
+            "${outputDir}/trivy-image-CRITICAL-results.json"
     """
+
+    echo "[*] Trivy full scan complete. HTML reports generated in ${outputDir}"
 }
