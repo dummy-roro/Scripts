@@ -366,11 +366,11 @@ systemctl status jenkins
 
 ### Configure Jenkins to use shared library
 
-1 Go to Jenkins Dashboard > Manage Jenkins > Configure System
+1. Go to Jenkins Dashboard > Manage Jenkins > Configure System
 
-2 Scroll to Global Pipeline Libraries
+2. Scroll to Global Pipeline Libraries
 
-3 Click Add
+3. Click Add
 
   - Name: shared-lib (You’ll use this name in your pipeline)
 
