@@ -11,8 +11,14 @@ def call(Map config = [:]) {
 
     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: awsCredentials]]) {
         sh """
+            set -e
+            echo "Logging in to AWS ECR registry ${ecrRepo.split('/')[0]}"
             aws ecr get-login-password --region ${awsRegion} | docker login --username AWS --password-stdin ${ecrRepo.split('/')[0]}
+            
+            echo "Tagging image ${imageName}:${imageTag} as ${ecrImage}"
             docker tag ${imageName}:${imageTag} ${ecrImage}
+            
+            echo "Pushing image to ECR..."
             docker push ${ecrImage}
         """
     }
