@@ -364,6 +364,22 @@ You can use below command to get Jenkins Admin Password
 systemctl status jenkins
 ```
 
+Configure Jenkins to use shared library
+
+Go to Jenkins Dashboard > Manage Jenkins > Configure System
+
+Scroll to Global Pipeline Libraries
+
+Click Add
+
+  - Name: shared-lib (You’ll use this name in your pipeline)
+
+  - Default version: main (or any branch)
+
+  - Retrieval method: Choose "Modern SCM" → "Git"
+
+  - Project repository: Add your Git repository URL
+
 Jenkinsfile for Terraform Actions to create EKS cluster using shared library
 
 ```bash
