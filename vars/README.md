@@ -136,11 +136,13 @@ pipeline {
         // Approval for deployment to specific environment
         stage('Approval for Deployment') {
             when {
-                anyOf {
-                    branch 'staging'
-                    branch 'main'
+                allOf {
+                    anyOf {
+                        branch 'staging'
+                        branch 'main'
+                    }
+                    expression { return !env.CHANGE_ID }  // Skip PRs
                 }
-                expression { return !env.CHANGE_ID }  // Skip PRs
             }
             steps {
                 script {
@@ -148,18 +150,26 @@ pipeline {
                         echo "Auto-approving deployment for staging branch."
                         deployApproved = true
                     } else if (env.BRANCH_NAME == 'main') {
-                        def response = input(
-                            message: 'Deploy to production cluster?',
-                            parameters: [
-                                choice(name: 'Proceed?', choices: ['Yes', 'No'], description: 'Choose Yes to deploy')
-                            ]
-                        )
-                        if (response == 'Yes') {
-                            deployApproved = true
-                        } else {
-                            echo "Deployment not approved. Aborting."
+                        try {
+                            timeout(time: 7, unit: 'DAYS') {
+                                def response = input(
+                                    message: 'Deploy to production cluster?',
+                                    parameters: [
+                                        choice(name: 'Proceed?', choices: ['Yes', 'No'], description: 'Choose Yes to deploy')
+                                    ]
+                                )
+                                if (response == 'Yes') {
+                                    deployApproved = true
+                                } else {
+                                    echo "Deployment not approved. Aborting."
+                                    currentBuild.result = 'ABORTED'
+                                    error("User aborted deployment.")
+                                }
+                            }
+                        } catch (org.jenkinsci.plugins.workflow.steps.TimeoutStepExecution$TimeoutException e) {
+                            echo "Approval timed out. Aborting pipeline."
                             currentBuild.result = 'ABORTED'
-                            error("User aborted deployment.")
+                            error("No approval received within timeout period.")
                         }
                     } else {
                         // For safety, don't deploy for other branches
@@ -170,16 +180,18 @@ pipeline {
             }
         }
 
+        // Change image tag in GitOps repository and deploy to cluster
         stage('Deploy to Cluster') {
             when {
                 expression { return deployApproved }
             }
             steps {
                 script {
-                    echo "Deploying to ${targetEnvironment} environment..."
-
-                    // Use branchName or other config if needed, e.g.:
+                    // Define environment based on branch
+                    def targetEnvironment = (env.BRANCH_NAME == 'main') ? 'prod' : 'staging'
                     def gitopsBranch = (targetEnvironment == 'prod') ? 'main' : 'staging'
+
+                    echo "Deploying to ${targetEnvironment} environment..."
 
                     changeImageTag(
                         imageTag: env.IMAGE_TAG,
@@ -195,7 +207,6 @@ pipeline {
             }
         }
 
-        // Confirming ArgoCD sync
         // This stage will wait for user input to confirm if ArgoCD has synced the deployment
         stage('Confirm ArgoCD Sync') {
             when {
