@@ -122,14 +122,21 @@ pipeline {
         // Pushing the Docker image to ECR
         stage('Docker Push - ECR') {
             steps {
-                dockerPushECR(
-                    imageName: env.IMAGE_NAME,
-                    imageTag: env.IMAGE_TAG,
-                    awsRegion: env.AWS_REGION,
-                    ecrRepo: "${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com/${env.IMAGE_NAME}", // replace with your ECR repository
-                    dockerfile: 'Dockerfile',
-                    credentials: 'aws-ecr-credentials'
-                )
+                script {
+                    def fullImageName = "${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com/${env.IMAGE_NAME}:${env.IMAGE_TAG}"
+        
+                    dockerPushECR(
+                        imageName: env.IMAGE_NAME,
+                        imageTag: env.IMAGE_TAG,
+                        awsRegion: env.AWS_REGION,
+                        ecrRepo: "${env.AWS_ACCOUNT_ID}.dkr.ecr.${env.AWS_REGION}.amazonaws.com/${env.IMAGE_NAME}",
+                        dockerfile: 'Dockerfile',
+                        credentials: 'aws-ecr-credentials'
+                    )
+        
+                    echo "Cleaning up local Docker image: ${fullImageName}"
+                    sh "docker rmi ${fullImageName} || true"
+                }
             }
         }
 
