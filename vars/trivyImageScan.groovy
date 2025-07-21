@@ -1,65 +1,62 @@
 def call(Map config = [:]) {
-    def imageName = config.imageName ?: error("imageName is required")
-    def imageTag = config.imageTag ?: "latest"
-    def outputDir = config.outputDir ?: "."
+    def imageName    = config.imageName    ?: error('imageName is required')
+    def imageTag     = config.imageTag     ?: 'latest'
+    def outputDir    = config.outputDir    ?: '.'
     def failOnCritical = config.get('failOnCritical', true)
+    def htmlTemplate = config.htmlTemplate ?: '/usr/local/share/trivy/templates/html.tpl'
 
-    echo "[*] Running Trivy scan + HTML report for image: ${imageName}:${imageTag}"
+    sh "mkdir -p '${outputDir}'"
 
-    // Ensure output directory exists
-    sh "mkdir -p \"${outputDir}\""
-
-    // Scan LOW, MEDIUM, HIGH
+    // 1) SARIF for Jenkins warnings-ng plugin / recordIssues
     sh """
-        trivy image ${imageName}:${imageTag} \\
-            --severity LOW,MEDIUM,HIGH \\
-            --exit-code 0 \\
-            --quiet \\
-            --format json -o "${outputDir}/trivy-image-medium-results.json"
+        trivy image ${imageName}:${imageTag} \
+            --format sarif \
+            --output '${outputDir}/trivy.sarif' \
+            --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
     """
 
-    // Generate HTML report for LOW, MEDIUM, HIGH
+    // 2) JSON + optional HTML for LOW,MEDIUM,HIGH
     sh """
-        trivy convert \\
-            --format template \\
-            --template "@/usr/local/share/trivy/templates/html.tpl" \\
-            --output "${outputDir}/trivy-image-medium-results.html" \\
-            "${outputDir}/trivy-image-medium-results.json"
+        trivy image ${imageName}:${imageTag} \
+            --severity LOW,MEDIUM,HIGH \
+            --exit-code 0 \
+            --format json \
+            --output '${outputDir}/trivy-image-medium-results.json'
+    """
+    sh """
+        trivy convert \
+            --format template \
+            --template '@${htmlTemplate}' \
+            --output '${outputDir}/trivy-image-medium-results.html' \
+            '${outputDir}/trivy-image-medium-results.json'
     """
 
-    // Initialize flag to track critical scan failure
-    def criticalScanFailed = false
-
-    // Run critical scan with failure control
+    // 3) Critical scan with pipeline gate
+    def criticalFail = false
     try {
         sh """
-            trivy image ${imageName}:${imageTag} \\
-                --severity CRITICAL \\
-                --exit-code ${failOnCritical ? 1 : 0} \\
-                --quiet \\
-                --format json -o "${outputDir}/trivy-image-critical-results.json"
+            trivy image ${imageName}:${imageTag} \
+                --severity CRITICAL \
+                --exit-code ${failOnCritical ? 1 : 0} \
+                --format json \
+                --output '${outputDir}/trivy-image-critical-results.json'
         """
-    } catch (Exception e) {
-        criticalScanFailed = true
-        echo "Critical vulnerabilities detected in image scan."
-        if (!failOnCritical) {
-            echo "FailOnCritical is false, continuing pipeline despite critical issues."
-        }
+    } catch (e) {
+        criticalFail = true
+        echo 'Critical vulnerabilities detected in image scan.'
     }
 
-    // Always generate HTML report for critical vulnerabilities
     sh """
-        trivy convert \\
-            --format template \\
-            --template "@/usr/local/share/trivy/templates/html.tpl" \\
-            --output "${outputDir}/trivy-image-critical-results.html" \\
-            "${outputDir}/trivy-image-critical-results.json"
+        trivy convert \
+            --format template \
+            --template '@${htmlTemplate}' \
+            --output '${outputDir}/trivy-image-critical-results.html' \
+            '${outputDir}/trivy-image-critical-results.json'
     """
 
-    // Fail pipeline if critical vulnerabilities found
-    if (criticalScanFailed && failOnCritical) {
-        error("Pipeline failed due to critical vulnerabilities found in ${imageName}:${imageTag}")
+    if (criticalFail && failOnCritical) {
+        error("Pipeline failed due to critical vulnerabilities in ${imageName}:${imageTag}")
     }
 
-    echo "[*] Trivy scan and report generation complete for ${imageName}:${imageTag}."
+    echo "[✓] Trivy scan complete for ${imageName}:${imageTag}"
 }
