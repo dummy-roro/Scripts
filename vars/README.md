@@ -1,6 +1,6 @@
 # Jenkins Shared Library Files
 
-##Example Jenkinsfile using shared library
+## Example Jenkinsfile using shared library
 
 ```bash
 @Library('jenkins-shared-library') _ // Load your shared library
@@ -241,6 +241,38 @@ pipeline {
         }
         failure {
             echo "Pipeline failed. Please check the logs for details."
+        }
+    }
+}
+```
+## OWASP ZAP Scan
+```bash
+stage('DAST - Quick ZAP Baseline Scan') {
+    when {
+        allOf {
+            anyOf {
+                branch 'staging'
+                branch 'main'
+            }
+            expression { return !env.CHANGE_ID } // Skip PRs
+        }
+    }
+    steps {
+        script {
+            def targetURL = (env.BRANCH_NAME == 'main') ? 'https://prod.example.com' : 'https://staging.example.com'
+
+            echo "Running quick ZAP baseline scan against: ${targetURL}"
+
+            sh """
+            docker run --rm -t owasp/zap2docker-stable zap-baseline.py \\
+              -t ${targetURL} \\
+              -r zap-baseline-report.html \\
+              -j \\
+              --exit-code 0 \\
+              --quick-scan
+            """
+
+            archiveArtifacts artifacts: 'zap-baseline-report.html', allowEmptyArchive: true
         }
     }
 }
