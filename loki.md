@@ -111,67 +111,6 @@ clients:
   - url: http://loki:3100/loki/api/v1/push
 
 scrape_configs:
-  # ──────────────── Chroma DB ────────────────
-  - job_name: chroma-db-out
-    static_configs:
-      - targets: [localhost]
-        labels:
-          job: chroma-db
-          app: chroma
-          stream: stdout
-          __path__: /home/ubuntu/.pm2/logs/chroma-db-out-*.log
-
-  - job_name: chroma-db-error
-    static_configs:
-      - targets: [localhost]
-        labels:
-          job: chroma-db
-          app: chroma
-          stream: stderr
-          __path__: /home/ubuntu/.pm2/logs/chroma-db-error-*.log
-
-  # ──────────────── Smart Alpha Frontend ────────────────
-  - job_name: smart-alpha-frontend-out
-    static_configs:
-      - targets: [localhost]
-        labels:
-          job: smart-alpha-frontend
-          app: smart-alpha
-          component: frontend
-          stream: stdout
-          __path__: /home/ubuntu/.pm2/logs/smart-alpha-frontend-out.log
-
-  - job_name: smart-alpha-frontend-error
-    static_configs:
-      - targets: [localhost]
-        labels:
-          job: smart-alpha-frontend
-          app: smart-alpha
-          component: frontend
-          stream: stderr
-          __path__: /home/ubuntu/.pm2/logs/smart-alpha-frontend-error.log
-
-  # ──────────────── Smart Alpha School Backend ────────────────
-  - job_name: smart-alpha-school-backend-out
-    static_configs:
-      - targets: [localhost]
-        labels:
-          job: smart-alpha-school-backend
-          app: smart-alpha
-          component: school-backend
-          stream: stdout
-          __path__: /home/ubuntu/.pm2/logs/smart-alpha-school-backend-out.log
-
-  - job_name: smart-alpha-school-backend-error
-    static_configs:
-      - targets: [localhost]
-        labels:
-          job: smart-alpha-school-backend
-          app: smart-alpha
-          component: school-backend
-          stream: stderr
-          __path__: /home/ubuntu/.pm2/logs/smart-alpha-school-backend-error.log
-
   # ──────────────── System Logs ────────────────
   - job_name: system
     static_configs:
@@ -229,73 +168,6 @@ clients:
   - url: http://loki:3100/loki/api/v1/push
 
 scrape_configs:
-  # ──────────────── Chroma DB ────────────────
-  - job_name: chroma-db-out
-    static_configs:
-      - targets: [localhost]
-        labels:
-          server: newnext       # 👈 add unique server label
-          job: chroma-db
-          app: chroma
-          stream: stdout
-          __path__: /home/ubuntu/.pm2/logs/chroma-db-out-*.log
-
-  - job_name: chroma-db-error
-    static_configs:
-      - targets: [localhost]
-        labels:
-          server: newnext
-          job: chroma-db
-          app: chroma
-          stream: stderr
-          __path__: /home/ubuntu/.pm2/logs/chroma-db-error-*.log
-
-  # ──────────────── Smart Alpha Frontend ────────────────
-  - job_name: smart-alpha-frontend-out
-    static_configs:
-      - targets: [localhost]
-        labels:
-          server: newnext
-          job: smart-alpha-frontend
-          app: smart-alpha
-          component: frontend
-          stream: stdout
-          __path__: /home/ubuntu/.pm2/logs/smart-alpha-frontend-out.log
-
-  - job_name: smart-alpha-frontend-error
-    static_configs:
-      - targets: [localhost]
-        labels:
-          server: newnext
-          job: smart-alpha-frontend
-          app: smart-alpha
-          component: frontend
-          stream: stderr
-          __path__: /home/ubuntu/.pm2/logs/smart-alpha-frontend-error.log
-
-  # ──────────────── Smart Alpha School Backend ────────────────
-  - job_name: smart-alpha-school-backend-out
-    static_configs:
-      - targets: [localhost]
-        labels:
-          server: newnext
-          job: smart-alpha-school-backend
-          app: smart-alpha
-          component: school-backend
-          stream: stdout
-          __path__: /home/ubuntu/.pm2/logs/smart-alpha-school-backend-out.log
-
-  - job_name: smart-alpha-school-backend-error
-    static_configs:
-      - targets: [localhost]
-        labels:
-          server: newnext
-          job: smart-alpha-school-backend
-          app: smart-alpha
-          component: school-backend
-          stream: stderr
-          __path__: /home/ubuntu/.pm2/logs/smart-alpha-school-backend-error.log
-
   # ──────────────── System Logs ────────────────
   - job_name: system
     static_configs:
@@ -425,10 +297,10 @@ In Grafana Explore, run:
     },
     {
       "type": "logs",
-      "title": "Live Tail – Smart Alpha Frontend Logs",
+      "title": "Live Tail – Frontend Logs",
       "targets": [
         {
-          "expr": "{job=\"smart-alpha-frontend\"}",
+          "expr": "{job=\"frontend\"}",
           "refId": "E"
         }
       ],
@@ -436,10 +308,10 @@ In Grafana Explore, run:
     },
     {
       "type": "logs",
-      "title": "Live Tail – Smart Alpha School Backend Logs",
+      "title": "Live Tail – Backend Logs",
       "targets": [
         {
-          "expr": "{job=\"smart-alpha-school-backend\"}",
+          "expr": "{job=\"backend\"}",
           "refId": "F"
         }
       ],
@@ -509,5 +381,3 @@ server {
     }
 }
 ```
-
-.
