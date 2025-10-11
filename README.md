@@ -1731,7 +1731,11 @@ chmod +x setup.sh
 > 📁 Make sure you're running as a user with `sudo` privileges.
 
 ---
+### Scan which ports are opening
 
+```bash
+nmap -p 1-65535 <IP>
+```
 
 ## 📎 License
 
