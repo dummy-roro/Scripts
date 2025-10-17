@@ -14,7 +14,6 @@
 Walk through of the process of setting up a robust infrastructure on AWS using EKS, DevOps best practices, and security measures. This project aims to provide necessary commands and resources to get hands-on experience in deploying, securing, and monitoring a scalable application environment and infra. (Note: All commands are for Linux:Ubuntu)
 
 ## Article
-
 - [Tools Installation](#Tools-Installation)
   - [Iac](#Iac-Tools)
     - [Terraform](#Terraform)
