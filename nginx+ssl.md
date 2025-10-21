@@ -23,14 +23,14 @@ edits your nginx config,
 •
 installs the renew cron.
 
-# Auto-renewal
+# Auto-renewal (Optional)
 Certbot already adds a systemd timer. 
 Verify:
 ```bash
 sudo systemctl list-timers | grep certbot
 sudo certbot renew --dry-run
 ```
-#Enable the site with a symbolic link
+# Enable the site with a symbolic link
 ```bash
 sudo ln -s /etc/nginx/sites-available/<conf-name>.conf /etc/nginx/sites-enabled/
 ```
