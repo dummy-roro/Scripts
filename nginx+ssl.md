@@ -1,5 +1,6 @@
 # Install Certbot + Nginx plug-in
 ```bash
+sudo apt update
 sudo yum install -y epel-release
 sudo yum install -y certbot python3-certbot-nginx
 ```
@@ -28,6 +29,15 @@ Verify:
 ```bash
 sudo systemctl list-timers | grep certbot
 sudo certbot renew --dry-run
+```
+#Enable the site with a symbolic link
+```bash
+sudo ln -s /etc/nginx/sites-available/<conf-name>.conf /etc/nginx/sites-enabled/
+```
+# If the symlink already exists, you can remove it first:
+```bash
+sudo rm /etc/nginx/sites-enabled/<conf-name>.conf
+sudo ln -s /etc/nginx/sites-available/<conf-name>.conf /etc/nginx/sites-enabled/
 ```
 # Reload After Any Manual Edit
 ```bash
