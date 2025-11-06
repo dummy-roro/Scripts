@@ -1,8 +1,13 @@
 # Install Certbot + Nginx plug-in
 ```bash
+#for centos/rhel
 sudo apt update
 sudo yum install -y epel-release
 sudo yum install -y certbot python3-certbot-nginx
+#for ubuntu
+sudo apt update
+sudo apt install certbot python3-certbot-nginx -y
+
 ```
 # Obtain Certificate
 ```bash
